@@ -1,0 +1,10 @@
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\EntityCodeGenerator.exe
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\EntityCodeGenerator.pdb
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\Microsoft.VisualStudio.TextTemplating.10.0.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\Microsoft.VisualStudio.TextTemplating.Interfaces.10.0.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.csprojResolveAssemblyReference.cache
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.Form1.resources
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.Properties.Resources.resources
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.csproj.GenerateResource.Cache
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.exe
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.pdb
