@@ -30,9 +30,9 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace <#= code.EscapeNamespace(efHost.Namespace) #>
 {
-    public class <#= efHost.EntityType.Name #>Map : EntityTypeConfiguration<<#= efHost.EntityType.Name #>>
+    public class <#= efHost.EntityName #>Map : EntityTypeConfiguration<<#= efHost.EntityName #>>
     {
-        public <#= efHost.EntityType.Name #>Map()
+        public <#= efHost.EntityName #>Map()
         {
             // Primary Key
 <#

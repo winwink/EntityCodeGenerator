@@ -22,7 +22,7 @@ namespace EntityCodeGenerator
                 new EntityStoreSchemaFilterEntry(null, null, "EdmMetadata", EntityStoreSchemaFilterObjectTypes.Table, EntityStoreSchemaFilterEffect.Exclude),
                 new EntityStoreSchemaFilterEntry(null, null, "__MigrationHistory", EntityStoreSchemaFilterObjectTypes.Table, EntityStoreSchemaFilterEffect.Exclude)
             };
-   
+
 
         public void ReverseEngineerCodeFirst()
         {
@@ -33,7 +33,7 @@ namespace EntityCodeGenerator
                 // Find connection string and provider
                 string connectionString = "data source=172.21.4.31,10086;initial catalog=Eme4;user id=eme;password=io77@68;MultipleActiveResultSets=True;App=EntityFramework&quot;";
                 var providerInvariant = "System.Data.SqlClient";
-                string projectNamespace ="TEST";
+                string projectNamespace = "TEST";
                 string currentDirectory = System.IO.Directory.GetCurrentDirectory();
 
                 DbConnection connection = new SqlConnection(connectionString);
@@ -42,10 +42,10 @@ namespace EntityCodeGenerator
                 var storeGenerator = new EntityStoreSchemaGenerator(providerInvariant, connectionString, "dbo");
                 storeGenerator.GenerateForeignKeyProperties = true;
                 var errors = storeGenerator.GenerateStoreMetadata(_storeMetadataFilters).Where(e => e.Severity == EdmSchemaErrorSeverity.Error);
-               
+
 
                 // Generate default mapping
-              
+
                 var contextName = connection.Database.Replace(" ", string.Empty).Replace(".", string.Empty) + "Context";
                 var modelGenerator = new EntityModelSchemaGenerator(storeGenerator.EntityContainer, "DefaultNamespace", contextName);
                 modelGenerator.PluralizationService = PluralizationService.CreateService(new CultureInfo("en"));
@@ -55,7 +55,7 @@ namespace EntityCodeGenerator
                 // Pull out info about types to be generated
                 var entityTypes = modelGenerator.EdmItemCollection.OfType<EntityType>().ToArray();
                 var mappings = new EdmMapping(modelGenerator, storeGenerator.StoreItemCollection);
-               
+
 
                 // Generate Entity Classes and Mappings
                 var templateProcessor = new TemplateProcessor();
@@ -118,19 +118,17 @@ namespace EntityCodeGenerator
                 var contextFilePath = Path.Combine(modelsDirectory, modelGenerator.EntityContainer.Name + contextHost.FileExtension);
                 FileGenerator.AddNewFile(contextFilePath, contextContents);
 
-              
+
             }
             catch (Exception exception)
             {
-                
+
             }
         }
 
 
-        public void CodeGenerator(string connectionString, string projectNamespace,Action<string> action)
+        public void CodeGenerator(string connectionString, string projectNamespace, Action<string> action)
         {
-
-
             try
             {
                 // Find connection string and provider
@@ -139,15 +137,12 @@ namespace EntityCodeGenerator
 
                 using (DbConnection connection = new SqlConnection(connectionString))
                 {
-
                     // Load store schema
                     var storeGenerator = new EntityStoreSchemaGenerator(providerInvariant, connectionString, "dbo");
                     storeGenerator.GenerateForeignKeyProperties = true;
                     var errors = storeGenerator.GenerateStoreMetadata(_storeMetadataFilters).Where(e => e.Severity == EdmSchemaErrorSeverity.Error);
 
-
                     // Generate default mapping
-
                     var contextName = connection.Database.Replace(" ", string.Empty).Replace(".", string.Empty) + "Context";
                     var modelGenerator = new EntityModelSchemaGenerator(storeGenerator.EntityContainer, "DefaultNamespace", contextName);
                     modelGenerator.PluralizationService = PluralizationService.CreateService(new CultureInfo("en"));
@@ -158,17 +153,22 @@ namespace EntityCodeGenerator
                     var entityTypes = modelGenerator.EdmItemCollection.OfType<EntityType>().ToArray();
                     var mappings = new EdmMapping(modelGenerator, storeGenerator.StoreItemCollection);
 
-
                     // Generate Entity Classes and Mappings
                     var templateProcessor = new TemplateProcessor();
                     var modelsNamespace = projectNamespace + ".Models";
                     var modelsDirectory = Path.Combine(currentDirectory, "Models");
                     var mappingNamespace = modelsNamespace + ".Mapping";
                     var mappingDirectory = Path.Combine(modelsDirectory, "Mapping");
+                    var repositoryNamespace = projectNamespace + ".Repository";
+                    var repositoryDirectory = Path.Combine(currentDirectory, "Repository");
+                    var repositoryBaseNamespace = projectNamespace + ".RepositoryBase";
+                    var serviceNamespace = projectNamespace + ".Services";
+                    var serviceDirectory = Path.Combine(currentDirectory, "Services");
                     var entityFrameworkVersion = GetEntityFrameworkVersion();
 
                     foreach (var entityType in entityTypes)
                     {
+                        var entityName = entityType.Name.RemoveSpecialChar();
                         // Generate the code file
                         var entityHost = new EfTextTemplateHost
                         {
@@ -180,29 +180,75 @@ namespace EntityCodeGenerator
                             EntityFrameworkVersion = entityFrameworkVersion,
                             TableSet = mappings.EntityMappings[entityType].Item1,
                             PropertyToColumnMappings = mappings.EntityMappings[entityType].Item2,
-                            ManyToManyMappings = mappings.ManyToManyMappings
+                            ManyToManyMappings = mappings.ManyToManyMappings,
+                            EntityName = entityName
                         };
                         var entityContents = templateProcessor.Process(Templates.EntityTemplate, entityHost);
 
-                        var filePath = Path.Combine(modelsDirectory, entityType.Name + entityHost.FileExtension);
+                        var filePath = Path.Combine(modelsDirectory, entityName + entityHost.FileExtension);
                         FileGenerator.AddNewFile(filePath, entityContents);
 
+                        // Generate the map file
                         var mappingHost = new EfTextTemplateHost
-                      {
-                          EntityType = entityType,
-                          EntityContainer = modelGenerator.EntityContainer,
-                          Namespace = mappingNamespace,
-                          ModelsNamespace = modelsNamespace,
-                          MappingNamespace = mappingNamespace,
-                          EntityFrameworkVersion = entityFrameworkVersion,
-                          TableSet = mappings.EntityMappings[entityType].Item1,
-                          PropertyToColumnMappings = mappings.EntityMappings[entityType].Item2,
-                          ManyToManyMappings = mappings.ManyToManyMappings
-                      };
+                        {
+                            EntityType = entityType,
+                            EntityContainer = modelGenerator.EntityContainer,
+                            Namespace = mappingNamespace,
+                            ModelsNamespace = modelsNamespace,
+                            MappingNamespace = mappingNamespace,
+                            EntityFrameworkVersion = entityFrameworkVersion,
+                            TableSet = mappings.EntityMappings[entityType].Item1,
+                            PropertyToColumnMappings = mappings.EntityMappings[entityType].Item2,
+                            ManyToManyMappings = mappings.ManyToManyMappings,
+                            EntityName = entityName
+                        };
                         var mappingContents = templateProcessor.Process(Templates.MappingTemplate, mappingHost);
 
-                        var mappingFilePath = Path.Combine(mappingDirectory, entityType.Name + "Map" + mappingHost.FileExtension);
+                        var mappingFilePath = Path.Combine(mappingDirectory, entityName + "Map" + mappingHost.FileExtension);
                         FileGenerator.AddNewFile(mappingFilePath, mappingContents);
+
+                        //Generate the repository file
+                        var repoHost = new EfTextTemplateHost
+                        {
+                            EntityType = entityType,
+                            EntityContainer = modelGenerator.EntityContainer,
+                            Namespace = repositoryNamespace,
+                            ModelsNamespace = modelsNamespace,
+                            MappingNamespace = mappingNamespace,
+                            RepositoryBaseNamespace = repositoryBaseNamespace,
+                            RepositoryNamespace = repositoryNamespace,
+                            EntityFrameworkVersion = entityFrameworkVersion,
+                            TableSet = mappings.EntityMappings[entityType].Item1,
+                            PropertyToColumnMappings = mappings.EntityMappings[entityType].Item2,
+                            ManyToManyMappings = mappings.ManyToManyMappings,
+                            EntityName = entityName
+                        };
+                        var repositoryContents = templateProcessor.Process(Templates.RepositoryTemplate, repoHost);
+
+                        var repositoryPath = Path.Combine(repositoryDirectory, entityName + "Repository" + repoHost.FileExtension);
+                        FileGenerator.AddNewFile(repositoryPath, repositoryContents);
+
+                        //Generate the service file
+                        var serviceHost = new EfTextTemplateHost
+                        {
+                            EntityType = entityType,
+                            EntityContainer = modelGenerator.EntityContainer,
+                            Namespace = repositoryNamespace,
+                            ModelsNamespace = modelsNamespace,
+                            MappingNamespace = mappingNamespace,
+                            RepositoryBaseNamespace = repositoryBaseNamespace,
+                            RepositoryNamespace = repositoryNamespace,
+                            EntityFrameworkVersion = entityFrameworkVersion,
+                            TableSet = mappings.EntityMappings[entityType].Item1,
+                            PropertyToColumnMappings = mappings.EntityMappings[entityType].Item2,
+                            ManyToManyMappings = mappings.ManyToManyMappings,
+                            EntityName = entityName
+                        };
+                        var serviceContents = templateProcessor.Process(Templates.ServiceTemplate, serviceHost);
+
+                        var servicePath = Path.Combine(serviceDirectory, entityName + "Service" + serviceHost.FileExtension);
+                        FileGenerator.AddNewFile(servicePath, serviceContents);
+
                     }
 
                     // Generate Context
@@ -234,16 +280,16 @@ namespace EntityCodeGenerator
                 }
             }
         }
-        
+
         private static Version GetEntityFrameworkVersion()
         {
             return new Version("6.0.0.0");
         }
-       
+
 
         private static string FixUpConnectionString(string connectionString, string providerName)
         {
-     
+
 
             if (providerName != "System.Data.SqlClient")
             {
@@ -251,9 +297,9 @@ namespace EntityCodeGenerator
             }
 
             var builder = new SqlConnectionStringBuilder(connectionString)
-                {
-                    MultipleActiveResultSets = true
-                };
+            {
+                MultipleActiveResultSets = true
+            };
             builder.Remove("Pooling");
 
             return builder.ToString();

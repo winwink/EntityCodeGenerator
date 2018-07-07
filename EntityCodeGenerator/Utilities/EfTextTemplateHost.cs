@@ -19,6 +19,8 @@ namespace Microsoft.DbContextPackage.Utilities
         public string Namespace { get; set; }
         public string ModelsNamespace { get; set; }
         public string MappingNamespace { get; set; }
+        public string RepositoryNamespace { get; set;}
+        public string RepositoryBaseNamespace { get; set; }
         public Version EntityFrameworkVersion { get; set; }
         public EntitySet TableSet { get; set; }
         public Dictionary<EdmProperty, EdmProperty> PropertyToColumnMappings { get; set; }
@@ -30,6 +32,8 @@ namespace Microsoft.DbContextPackage.Utilities
         public string FileExtension { get; set; }
         public Encoding OutputEncoding { get; set; }
         public string TemplateFile { get; set; }
+        public string EntityName { get; set; }
+        //public List<string> EntityNameList { get; set; }
 
         public virtual string ResolveAssemblyReference(string assemblyReference)
         {
@@ -253,6 +257,13 @@ namespace Microsoft.DbContextPackage.Utilities
             OutputEncoding = encoding;
         }
 
+        //public void GetEntityNameList()
+        //{
+        //    foreach (EntitySet set in EntityContainer.BaseEntitySets.OfType<EntitySet>())
+        //    {
+        //        set.ElementType.Name.Replace(")
+        //    }
+        //}
         #endregion
     }
 }

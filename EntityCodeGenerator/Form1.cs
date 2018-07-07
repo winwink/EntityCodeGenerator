@@ -16,6 +16,13 @@ namespace EntityCodeGenerator
         public Form1()
         {
             InitializeComponent();
+            Init();
+        }
+
+        private void Init()
+        {
+            txtConnectionStr.Text = "Server=127.0.0.1;Database=RDCN_CPT_SMF_Data;Integrated Security=SSPI";
+            txtNameSpace.Text = "RDCN.CPT.Data";
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -25,11 +32,11 @@ namespace EntityCodeGenerator
                 string str = txtConnectionStr.Text.Trim();
                 Match m = Regex.Match(str, @"\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}");//检查是否字符串中有IP
 
-                if (!m.Success)
-                {
-                    MessageBox.Show("连接字符串缺少IP");
-                    return;
-                }
+                //if (!m.Success)
+                //{
+                //    MessageBox.Show("连接字符串缺少IP");
+                //    return;
+                //}
                 DBHelper.ConnectionString = str;
                 int Port = 1433;
                 if (Regex.IsMatch(str, @"\,\d+"))
@@ -107,6 +114,11 @@ namespace EntityCodeGenerator
             {
                 MessageBox.Show("文件夹不存在");
             }
+        }
+
+        private void txtConnectionStr_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

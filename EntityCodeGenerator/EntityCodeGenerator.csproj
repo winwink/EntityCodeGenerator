@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBHelper.cs" />
+    <Compile Include="StringExtension.cs" />
     <Compile Include="Utilities\CodeGenerationTools.cs" />
     <Compile Include="Utilities\EfTextTemplateHost.cs" />
     <Compile Include="Form1.cs">

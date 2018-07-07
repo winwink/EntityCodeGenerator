@@ -27,7 +27,7 @@ namespace <#= code.EscapeNamespace(efHost.Namespace) #>
     foreach (var set in efHost.EntityContainer.BaseEntitySets.OfType<EntitySet>())
     {
 #>
-        public DbSet<<#= set.ElementType.Name #>> <#= set.Name #> { get; set; }
+        public DbSet<<#= set.ElementType.Name.Replace("_","") #>> <#= set.Name.Replace("_","") #> { get; set; }
 <#
     }
 #>
@@ -38,7 +38,7 @@ namespace <#= code.EscapeNamespace(efHost.Namespace) #>
     foreach (var set in efHost.EntityContainer.BaseEntitySets.OfType<EntitySet>())
     {
 #>
-            modelBuilder.Configurations.Add(new <#= set.ElementType.Name #>Map());
+            modelBuilder.Configurations.Add(new <#= set.ElementType.Name.Replace("_","") #>Map());
 <#
     }
 #>
