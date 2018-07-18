@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ConfigEntityCollection>
+  <ConfigEntity TableName="Common_Attachments_Config" />
+  <ConfigEntity TableName="Common_Config" />
+</ConfigEntityCollection>

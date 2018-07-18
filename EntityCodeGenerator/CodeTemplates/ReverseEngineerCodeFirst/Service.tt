@@ -1,4 +1,4 @@
-﻿<#@ template hostspecific="true" language="C#" #>
+﻿<#@ template hostspecific="true" language="C#" debug="true" #>
 <#@
  output extension=".cs" #><#
 
@@ -7,12 +7,78 @@
 #>
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using System.Linq.Expressions;
 using <#= code.EscapeNamespace(efHost.RepositoryNamespace) #>;
 using <#= code.EscapeNamespace(efHost.ModelsNamespace) #>;
+using <#= code.EscapeNamespace(efHost.CoreNamespace) #>;
+
 
 namespace <#= code.EscapeNamespace(efHost.Namespace) #>
 {
+<# var keyType = code.Escape(efHost.PrimaryKey.TypeUsage);
+var keyName = efHost.PrimaryKey.Name;
+ #>
+
     public class <#= efHost.EntityName #>Service
     {
+		private <#= efHost.EntityName #>Repository _repo;
+        private string _connectionString;
+
+        public <#= efHost.EntityName #>Service(string connectionString)
+        {
+            _connectionString = connectionString;
+            _repo = new <#= efHost.EntityName #>Repository(_connectionString);
+        }
+
+        public <#= efHost.EntityName #> Read(<#=keyType #> <#= keyName #>)
+        {
+            return _repo.Get(<#= keyName #>);
+        }
+
+        public <#=keyType #> Create(<#= efHost.EntityName #> model)
+        {
+            _repo.Insert(model);
+            return model.<#= keyName #>;
+        }
+
+        public void Update(<#= efHost.EntityName #> model)
+        {
+            _repo.Update(model);
+        }
+
+        public void Delete(<#=keyType #> <#= keyName #>)
+        {
+            _repo.Delete(m => m.<#= keyName #> == <#= keyName #>);
+        }
+
+        public <#= keyType #> CreateOrUpdate(<#= efHost.EntityName #> model)
+        {
+            var get = _repo.Get(model.<#= keyName #>);
+            if (get == null)
+            {
+                _repo.Insert(model);
+            }
+            else
+            {
+                _repo.Update(model);
+            }
+            return model.<#= keyName #>;
+        }
+
+        public List<<#= efHost.EntityName #>> List()
+        {
+            return _repo.GetAll().ToList();
+        }
+
+        public List<<#= efHost.EntityName #>> List(Expression<Func<<#= efHost.EntityName #>, bool>> predicate)
+        {
+            return _repo.Get(predicate).ToList();
+        }
+        
+        public List<<#= efHost.EntityName #>> List(PagingSet paging)
+        {
+            return _repo.GetPagedList(paging);
+        }
     }
 }

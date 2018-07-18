@@ -1,7 +1,9 @@
-﻿using System;
+﻿using EntityCodeGenerator.Config;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -41,11 +43,11 @@ namespace EntityCodeGenerator
                 int Port = 1433;
                 if (Regex.IsMatch(str, @"\,\d+"))
                 {
-                    Port =Convert.ToInt32(Regex.Match(str, @"\,(\d+)").Groups[1].Value);
+                    Port = Convert.ToInt32(Regex.Match(str, @"\,(\d+)").Groups[1].Value);
                 }
                 if (DBHelper.TryConnect(m.ToString(), Port))
                 {
-                
+
                     btnConnect.Enabled = false;
                     btnDisconect.Enabled = true;
                     return;
@@ -72,20 +74,24 @@ namespace EntityCodeGenerator
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
+            Generate(true);
+        }
+
+        private void Generate(bool completedRun)
+        {
             if (string.IsNullOrEmpty(this.txtNameSpace.Text.Trim()))
             {
                 MessageBox.Show("命名空间不能为空.");
                 return;
             }
-            string connectionString=DBHelper.ConnectionString;
+            string connectionString = DBHelper.ConnectionString;
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 connectionString = txtConnectionStr.Text.Trim();
             }
             EngineerCodeFirstHandler codeEngineer = new EngineerCodeFirstHandler();
-            codeEngineer.CodeGenerator(connectionString, txtNameSpace.Text.Trim(), ShowMsg);
+            codeEngineer.CodeGenerator(connectionString, txtNameSpace.Text.Trim(), ShowMsg,completedRun);
         }
-
 
         private void ShowMsg(string msgContent)
         {
@@ -96,6 +102,7 @@ namespace EntityCodeGenerator
             else
             {
                 MessageBox.Show(msgContent);
+                Process.Start("Explorer.exe", Environment.CurrentDirectory);
             }
         }
 
@@ -119,6 +126,36 @@ namespace EntityCodeGenerator
         private void txtConnectionStr_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void Save()
+        {
+            ConfigEntityCollection col = new ConfigEntityCollection();
+            List<string> list = new List<string>() { "Common_Attachments_Config", "Common_Config", "Common_Dictionary" };
+            for(int i=0;i<list.Count;i++)
+            {
+                col.List.Add(new ConfigEntity(list[i]));
+            }
+
+            var result = col.ToXElement();
+            col.Save();
+        }
+
+        private ConfigEntityCollection ConfigLoad()
+        {
+            ConfigEntityCollection col = new ConfigEntityCollection();
+            col.Load();
+            return col;
+        }
+
+        private void BtnTest_Click(object sender, EventArgs e)
+        {
+            ConfigLoad();
+        }
+
+        private void BtnGenerateOne_Click(object sender, EventArgs e)
+        {
+            Generate(false);
         }
     }
 }

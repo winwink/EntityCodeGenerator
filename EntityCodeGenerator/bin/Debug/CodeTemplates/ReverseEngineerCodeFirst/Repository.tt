@@ -7,10 +7,16 @@
 #>
 using <#= code.EscapeNamespace(efHost.RepositoryBaseNamespace) #>;
 using <#= code.EscapeNamespace(efHost.ModelsNamespace) #>;
+using System.Data.Entity;
 
 namespace <#= code.EscapeNamespace(efHost.Namespace) #>
 {
     public class <#= efHost.EntityName #>Repository : RepositoryBase<<#= efHost.EntityName #>>
     {
+		public <#= efHost.EntityName #>Repository(string connectionString):base(connectionString)
+        { }
+
+        public <#= efHost.EntityName #>Repository(DbContext dbContext):base(dbContext)
+        { }
     }
 }

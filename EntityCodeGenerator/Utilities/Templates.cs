@@ -12,6 +12,8 @@ namespace Microsoft.DbContextPackage.Utilities
         public const string MappingTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Mapping.tt";
         public const string RepositoryTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Repository.tt";
         public const string ServiceTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Service.tt";
+        public const string SvcTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Svc.tt";
+
 
         public static string GetDefaultTemplate(string path)
         {

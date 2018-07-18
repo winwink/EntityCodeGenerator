@@ -23,11 +23,15 @@ namespace <#= code.EscapeNamespace(efHost.Namespace) #>
         {
         }
 
+		public <#= efHost.EntityContainer.Name #>(string connectionString):base(connectionString)
+        {
+		}
+
 <#
     foreach (var set in efHost.EntityContainer.BaseEntitySets.OfType<EntitySet>())
     {
 #>
-        public DbSet<<#= set.ElementType.Name.Replace("_","") #>> <#= set.Name.Replace("_","") #> { get; set; }
+        public DbSet<<#= RemoveSpecialString(set.ElementType.Name) #>> <#= RemoveSpecialString(set.Name) #> { get; set; }
 <#
     }
 #>
@@ -38,10 +42,17 @@ namespace <#= code.EscapeNamespace(efHost.Namespace) #>
     foreach (var set in efHost.EntityContainer.BaseEntitySets.OfType<EntitySet>())
     {
 #>
-            modelBuilder.Configurations.Add(new <#= set.ElementType.Name.Replace("_","") #>Map());
+            modelBuilder.Configurations.Add(new <#= RemoveSpecialString(set.ElementType.Name) #>Map());
 <#
     }
 #>
         }
     }
 }
+<#+
+	public string RemoveSpecialString(string input)
+	{
+		var result = input.Replace("_","");
+		return result;
+	}
+#>

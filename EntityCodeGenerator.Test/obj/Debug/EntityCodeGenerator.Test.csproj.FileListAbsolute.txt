@@ -1,0 +1,11 @@
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\EntityCodeGenerator.Test.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\EntityCodeGenerator.Test.pdb
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\EntityCodeGenerator.exe
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\Microsoft.VisualStudio.TextTemplating.Interfaces.10.0.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\Microsoft.VisualStudio.TextTemplating.10.0.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\EntityCodeGenerator.pdb
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\obj\Debug\EntityCodeGenerator.Test.csprojResolveAssemblyReference.cache
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\obj\Debug\EntityCodeGenerator.Test.dll
+D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator.Test\obj\Debug\EntityCodeGenerator.Test.pdb

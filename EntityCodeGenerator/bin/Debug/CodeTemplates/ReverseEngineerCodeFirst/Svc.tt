@@ -1,0 +1,162 @@
+﻿<#@ template hostspecific="true" language="C#" #>
+<#@
+ output extension=".cs" #><#
+
+    var efHost = (EfTextTemplateHost)Host;
+    var code = new CodeGenerationTools(this);
+	var codeK2 = new CodeGenerationToolsForK2(this);
+#>
+<#@ import namespace="EntityCodeGenerator.Template"#>
+<#@ import namespace="System.Collections.Generic"#>
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
+using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
+using SourceCode.SmartObjects.Services.ServiceSDK.Types;
+using <#= code.EscapeNamespace(efHost.ModelsNamespace) #>;
+using <#= code.EscapeNamespace(efHost.ServiceNamespace) #>;
+
+<# 
+	var keyType = code.Escape(efHost.PrimaryKey.TypeUsage);
+    var keyName = efHost.PrimaryKey.Name;
+	var entityName = efHost.EntityName;
+ #>
+
+namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
+{
+    [ServiceObject("<#= entityName #>Svc", "<#= entityName #>Svc", "<#= entityName #>Svc")]
+    public partial class <#= entityName #>Svc
+    {
+<#
+	List<string> propertyNameList = new List<string>();
+	
+    foreach (var property in efHost.EntityType.Properties)
+    {
+        var typeUsage = code.Escape(property.TypeUsage);
+		var typeK2 = codeK2.Escape(property.TypeUsage);
+        // Fix-up spatial types for EF6
+        if (efHost.EntityFrameworkVersion >= new Version(6, 0)
+            && typeUsage.StartsWith("System.Data.Spatial."))
+        {
+            typeUsage = typeUsage.Replace(
+                "System.Data.Spatial.",
+                "System.Data.Entity.Spatial.");
+        }
+		propertyNameList.Add("\""+code.Escape(property)+"\"");
+#>
+		[Property("<#= code.Escape(property) #>", SoType.<#= typeK2 #>, "<#= code.Escape(property) #>", "<#= code.Escape(property) #>")]
+        <#= Accessibility.ForProperty(property) #> <#= typeUsage #> <#= code.Escape(property) #> { get; set; }
+<#
+    }#>
+       
+    }
+
+    public partial class <#= entityName #>Svc
+    {
+        public ServiceConfiguration ServiceConfiguration { get; set; }
+
+        public string ConnString
+        {
+            get
+            {
+                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
+            }
+        }
+
+        public <#= entityName #>Svc()
+        { }
+
+        public static <#= entityName #>Svc GetFromEntity(<#= entityName #> entity)
+        {
+            <#= entityName #>Svc svc = new <#= entityName #>Svc();
+            svc.ParseFromEntity(entity);
+            return svc;
+        }
+
+        public void ParseFromEntity(<#= entityName #> entity)
+        {
+            <#
+			foreach (var property in efHost.EntityType.Properties)
+			{
+				var name = code.Escape(property);
+#>
+			this.<#=name#> = entity.<#=name#>;
+<#
+			}#>
+		}
+
+        private <#= entityName #> ConvertToEntity()
+        {
+            var entity = new <#= entityName #>();
+            <#
+			foreach (var property in efHost.EntityType.Properties)
+			{
+				var name = code.Escape(property);
+#>
+			entity.<#=name#> = this.<#=name#>;
+<#
+			}#>
+            return entity;
+        }
+
+        [Method("Read", MethodType.Read, "Read", "Read",
+            new string[] { },
+            new string[] { "<#=keyName#>" },
+            new string[] { <#=string.Join(",",propertyNameList)#>})]
+        public <#= entityName#>Svc Read()
+        {
+            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+            var model = service.Read(<#=keyName#>);
+            ParseFromEntity(model);
+            return this;
+        }
+
+        [Method("Create", MethodType.Create, "Create", "Create",
+            new string[] { },
+            new string[] { <#=string.Join(",",propertyNameList)#> },
+            new string[] { "<#=keyName#>"})]
+        public <#= entityName#>Svc Create()
+        {
+            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+            var entity = ConvertToEntity();
+            <#=keyName#> = service.Create(entity);
+
+            return this;
+        }
+
+        [Method("Update", MethodType.Update, "Update", "Update",
+            new string[] { },
+            new string[] { <#=string.Join(",",propertyNameList)#> },
+            new string[] { })]
+        public void Update()
+        {
+            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+            var entity = ConvertToEntity();
+            service.Update(entity);
+        }
+
+        [Method("Delete", MethodType.Delete, "Delete", "Delete",
+            new string[] { },
+            new string[] { "<#=keyName#>" },
+            new string[] { })]
+        public void Delete()
+        {
+            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+            service.Delete(<#=keyName#>);
+        }
+
+        [Method("List", MethodType.List, "List", "List",
+            new string[] { },
+            new string[] { <#=string.Join(",",propertyNameList)#> },
+            new string[] { <#=string.Join(",",propertyNameList)#> })]
+        public List<<#= entityName#>Svc> List()
+        {
+            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+            var list = service.List();
+            var result = list.Select(m => GetFromEntity(m)).ToList();
+            return result;
+        }
+    }
+}
