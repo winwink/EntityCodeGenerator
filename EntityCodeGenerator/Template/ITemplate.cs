@@ -37,7 +37,8 @@ namespace EntityCodeGenerator.Template
         public static string serviceDirectory = "";
         public static string svcNamespace = "";
         public static string svcDirectory = "";
-
+        public static string svcTestNamespace = "";
+        public static string svcTestDirectory = "";
         public static void Init()
         {
             var currentDirectory = Environment.CurrentDirectory;
@@ -52,8 +53,11 @@ namespace EntityCodeGenerator.Template
             coreNamespace = projectNamespace + ".Core";
             serviceDirectory = Path.Combine(currentDirectory, "Services");
 
-            svcNamespace = projectNamespace + ".Svc";
+            svcNamespace = projectNamespace + ".CommonSvc";
             svcDirectory = Path.Combine(currentDirectory, "Svc");
+
+            svcTestNamespace = svcNamespace + ".Tests";
+            svcTestDirectory = Path.Combine(currentDirectory, "SvcTest");
         }
     }
 }

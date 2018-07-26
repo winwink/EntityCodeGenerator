@@ -1,41 +1,42 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using RDCN.CPT.Data.Entity;
+using Common.CSWF.Entity;
 using System.Data.Entity.ModelConfiguration;
 
-namespace RDCN.CPT.Data.Entity.Mapping
+namespace Common.CSWF.Entity.Mapping
 {
     public class CommonOrgFunctionRegionMap : EntityTypeConfiguration<CommonOrgFunctionRegion>
     {
         public CommonOrgFunctionRegionMap()
         {
             // Primary Key
-            this.HasKey(t => t.FunctionRegionCode);
+            this.HasKey(t => t.ID);
 
             // Properties
-            this.Property(t => t.FunctionRegionCode)
+            this.Property(t => t.BACode)
                 .IsRequired()
-                .HasMaxLength(100);
-
-            this.Property(t => t.FunctionRegionNameCN)
-                .IsRequired()
-                .HasMaxLength(200);
-
-            this.Property(t => t.FunctionRegionNameEN)
-                .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(50);
 
             this.Property(t => t.BLCode)
                 .IsRequired()
                 .HasMaxLength(50);
 
+            this.Property(t => t.Function)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            this.Property(t => t.Region)
+                .IsRequired()
+                .HasMaxLength(200);
+
             // Table & Column Mappings
             this.ToTable("Common_Org_FunctionRegion");
-            this.Property(t => t.FunctionRegionCode).HasColumnName("FunctionRegionCode");
-            this.Property(t => t.FunctionRegionNameCN).HasColumnName("FunctionRegionNameCN");
-            this.Property(t => t.FunctionRegionNameEN).HasColumnName("FunctionRegionNameEN");
+            this.Property(t => t.ID).HasColumnName("ID");
+            this.Property(t => t.BACode).HasColumnName("BACode");
             this.Property(t => t.BLCode).HasColumnName("BLCode");
-            this.Property(t => t.IsActive).HasColumnName("IsActive");
+            this.Property(t => t.Function).HasColumnName("Function");
+            this.Property(t => t.Region).HasColumnName("Region");
             this.Property(t => t.OrderId).HasColumnName("OrderId");
+            this.Property(t => t.IsActive).HasColumnName("IsActive");
         }
     }
 }

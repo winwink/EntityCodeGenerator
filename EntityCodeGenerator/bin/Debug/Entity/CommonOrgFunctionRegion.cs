@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace RDCN.CPT.Data.Entity
+namespace Common.CSWF.Entity
 {
     public  class CommonOrgFunctionRegion
     {
-        public string FunctionRegionCode { get; set; }
-        public string FunctionRegionNameCN { get; set; }
-        public string FunctionRegionNameEN { get; set; }
+        public int ID { get; set; }
+        public string BACode { get; set; }
         public string BLCode { get; set; }
-        public bool IsActive { get; set; }
+        public string Function { get; set; }
+        public string Region { get; set; }
         public int OrderId { get; set; }
+        public Nullable<bool> IsActive { get; set; }
     }
 }

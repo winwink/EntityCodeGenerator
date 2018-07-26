@@ -5,33 +5,34 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Services;
+using Common.CSWF.Entity;
+using Common.CSWF.Services;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Svc
+namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonLogSvc", "CommonLogSvc", "CommonLogSvc")]
     public partial class CommonLogSvc
     {
 		[Property("ID", SoType.Number, "ID", "ID")]
         public int ID { get; set; }
-		[Property("ActionUserAccount", SoType.Text, "ActionUserAccount", "ActionUserAccount")]
-        public string ActionUserAccount { get; set; }
-		[Property("ActionUserName", SoType.Text, "ActionUserName", "ActionUserName")]
-        public string ActionUserName { get; set; }
-		[Property("Module", SoType.Text, "Module", "Module")]
-        public string Module { get; set; }
-		[Property("Action", SoType.Text, "Action", "Action")]
-        public string Action { get; set; }
-		[Property("ActionTime", SoType.DateTime, "ActionTime", "ActionTime")]
-        public Nullable<System.DateTime> ActionTime { get; set; }
-		[Property("OldValue", SoType.Text, "OldValue", "OldValue")]
-        public string OldValue { get; set; }
-		[Property("NewValue", SoType.Text, "NewValue", "NewValue")]
-        public string NewValue { get; set; }
-		[Property("Comments", SoType.Text, "Comments", "Comments")]
-        public string Comments { get; set; }
+
+		[Property("ReqeustID", SoType.Number, "ReqeustID", "ReqeustID")]
+        public long ReqeustID { get; set; }
+
+		[Property("Source", SoType.Text, "Source", "Source")]
+        public string Source { get; set; }
+
+		[Property("LogLevel", SoType.Text, "LogLevel", "LogLevel")]
+        public string LogLevel { get; set; }
+
+		[Property("Message", SoType.Text, "Message", "Message")]
+        public string Message { get; set; }
+
+		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
+        public System.DateTime CreateTime { get; set; }
+
        
     }
 
@@ -59,47 +60,48 @@ namespace RDCN.CPT.Data.Svc
 
         public void ParseFromEntity(CommonLog entity)
         {
-            			this.ID = entity.ID;
-			this.ActionUserAccount = entity.ActionUserAccount;
-			this.ActionUserName = entity.ActionUserName;
-			this.Module = entity.Module;
-			this.Action = entity.Action;
-			this.ActionTime = entity.ActionTime;
-			this.OldValue = entity.OldValue;
-			this.NewValue = entity.NewValue;
-			this.Comments = entity.Comments;
+			if (entity == null) return;
+
+			this.ID = entity.ID;
+			this.ReqeustID = entity.ReqeustID;
+			this.Source = entity.Source;
+			this.LogLevel = entity.LogLevel;
+			this.Message = entity.Message;
+			this.CreateTime = entity.CreateTime;
 		}
 
-        private CommonLog ConvertToEntity()
+        public CommonLog ConvertToEntity()
         {
             var entity = new CommonLog();
-            			entity.ID = this.ID;
-			entity.ActionUserAccount = this.ActionUserAccount;
-			entity.ActionUserName = this.ActionUserName;
-			entity.Module = this.Module;
-			entity.Action = this.Action;
-			entity.ActionTime = this.ActionTime;
-			entity.OldValue = this.OldValue;
-			entity.NewValue = this.NewValue;
-			entity.Comments = this.Comments;
+			entity.ID = this.ID;
+			entity.ReqeustID = this.ReqeustID;
+			entity.Source = this.Source;
+			entity.LogLevel = this.LogLevel;
+			entity.Message = this.Message;
+			entity.CreateTime = this.CreateTime;
             return entity;
         }
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
             new string[] { "ID" },
-            new string[] { "ID","ActionUserAccount","ActionUserName","Module","Action","ActionTime","OldValue","NewValue","Comments"})]
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime"})]
         public CommonLogSvc Read()
         {
             CommonLogService service = new CommonLogService(ConnString);
             var model = service.Read(ID);
+			if (model == null)
+            {
+                return null;
+            }
+
             ParseFromEntity(model);
             return this;
         }
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","ActionUserAccount","ActionUserName","Module","Action","ActionTime","OldValue","NewValue","Comments" },
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" },
             new string[] { "ID"})]
         public CommonLogSvc Create()
         {
@@ -112,7 +114,7 @@ namespace RDCN.CPT.Data.Svc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","ActionUserAccount","ActionUserName","Module","Action","ActionTime","OldValue","NewValue","Comments" },
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" },
             new string[] { })]
         public void Update()
         {
@@ -133,14 +135,80 @@ namespace RDCN.CPT.Data.Svc
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","ActionUserAccount","ActionUserName","Module","Action","ActionTime","OldValue","NewValue","Comments" },
-            new string[] { "ID","ActionUserAccount","ActionUserName","Module","Action","ActionTime","OldValue","NewValue","Comments" })]
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" },
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" })]
         public List<CommonLogSvc> List()
         {
-            CommonLogService service = new CommonLogService(ConnString);
-            var list = service.List();
-            var result = list.Select(m => GetFromEntity(m)).ToList();
+			var conditions = BuildConditions();
+            List<CommonLog> entityList = new List<CommonLog>();
+			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+            {
+                entityList = db.CommonLog.Query(descriptor).ToList() ;
+            }
+
+            var result = entityList.Select(m => GetFromEntity(m)).ToList();
             return result;
+        }
+
+		private List<QueryCondition> BuildConditions()
+        {
+            List<QueryCondition> list = new List<QueryCondition>();
+			if (ID != default(int))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "ID";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = ID;
+				condition.ValueType = typeof(int).GetTypeName();
+				list.Add(condition);
+			}
+			if (ReqeustID != default(long))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "ReqeustID";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = ReqeustID;
+				condition.ValueType = typeof(long).GetTypeName();
+				list.Add(condition);
+			}
+			if (Source != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "Source";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = Source;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (LogLevel != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "LogLevel";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = LogLevel;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (Message != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "Message";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = Message;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (CreateTime != default(System.DateTime))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "CreateTime";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = CreateTime;
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
+				list.Add(condition);
+			}
+            return list;
         }
     }
 }

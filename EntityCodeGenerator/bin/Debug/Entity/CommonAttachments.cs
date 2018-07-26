@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace RDCN.CPT.Data.Entity
+namespace Common.CSWF.Entity
 {
     public  class CommonAttachments
     {
-        public int AttachmentID { get; set; }
-        public string RequestGuid { get; set; }
+        public int ID { get; set; }
+        public long RequestID { get; set; }
         public string AttachmentType { get; set; }
         public string AttachmentTypeName { get; set; }
         public string Title { get; set; }
@@ -14,8 +14,8 @@ namespace RDCN.CPT.Data.Entity
         public string FileUrl { get; set; }
         public Nullable<bool> IsAddWatermark { get; set; }
         public string CreateBy { get; set; }
-        public Nullable<System.DateTime> CreatedTime { get; set; }
-        public string LastUpdateBy { get; set; }
-        public Nullable<System.DateTime> LastUpdateTime { get; set; }
+        public System.DateTime CreateTime { get; set; }
+        public string UpdateBy { get; set; }
+        public Nullable<System.DateTime> UpdateTime { get; set; }
     }
 }

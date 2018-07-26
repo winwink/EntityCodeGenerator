@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using RDCN.CPT.Data.Entity;
+using Common.CSWF.Entity;
 using System.Data.Entity.ModelConfiguration;
 
-namespace RDCN.CPT.Data.Entity.Mapping
+namespace Common.CSWF.Entity.Mapping
 {
     public class CommonLogMap : EntityTypeConfiguration<CommonLog>
     {
@@ -12,38 +12,26 @@ namespace RDCN.CPT.Data.Entity.Mapping
             this.HasKey(t => t.ID);
 
             // Properties
-            this.Property(t => t.ActionUserAccount)
-                .HasMaxLength(200);
+            this.Property(t => t.Source)
+                .IsRequired()
+                .HasMaxLength(50);
 
-            this.Property(t => t.ActionUserName)
-                .HasMaxLength(200);
+            this.Property(t => t.LogLevel)
+                .IsRequired()
+                .HasMaxLength(15);
 
-            this.Property(t => t.Module)
-                .HasMaxLength(200);
-
-            this.Property(t => t.Action)
-                .HasMaxLength(200);
-
-            this.Property(t => t.OldValue)
-                .HasMaxLength(4000);
-
-            this.Property(t => t.NewValue)
-                .HasMaxLength(4000);
-
-            this.Property(t => t.Comments)
+            this.Property(t => t.Message)
+                .IsRequired()
                 .HasMaxLength(4000);
 
             // Table & Column Mappings
             this.ToTable("Common_Log");
             this.Property(t => t.ID).HasColumnName("ID");
-            this.Property(t => t.ActionUserAccount).HasColumnName("ActionUserAccount");
-            this.Property(t => t.ActionUserName).HasColumnName("ActionUserName");
-            this.Property(t => t.Module).HasColumnName("Module");
-            this.Property(t => t.Action).HasColumnName("Action");
-            this.Property(t => t.ActionTime).HasColumnName("ActionTime");
-            this.Property(t => t.OldValue).HasColumnName("OldValue");
-            this.Property(t => t.NewValue).HasColumnName("NewValue");
-            this.Property(t => t.Comments).HasColumnName("Comments");
+            this.Property(t => t.ReqeustID).HasColumnName("ReqeustID");
+            this.Property(t => t.Source).HasColumnName("Source");
+            this.Property(t => t.LogLevel).HasColumnName("LogLevel");
+            this.Property(t => t.Message).HasColumnName("Message");
+            this.Property(t => t.CreateTime).HasColumnName("CreateTime");
         }
     }
 }

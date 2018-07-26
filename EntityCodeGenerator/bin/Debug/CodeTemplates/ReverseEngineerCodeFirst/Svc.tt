@@ -17,6 +17,7 @@ using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
 using <#= code.EscapeNamespace(efHost.ModelsNamespace) #>;
 using <#= code.EscapeNamespace(efHost.ServiceNamespace) #>;
+using <#= code.EscapeNamespace(efHost.CoreNamespace) #>;
 
 <# 
 	var keyType = code.Escape(efHost.PrimaryKey.TypeUsage);
@@ -48,6 +49,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 #>
 		[Property("<#= code.Escape(property) #>", SoType.<#= typeK2 #>, "<#= code.Escape(property) #>", "<#= code.Escape(property) #>")]
         <#= Accessibility.ForProperty(property) #> <#= typeUsage #> <#= code.Escape(property) #> { get; set; }
+
 <#
     }#>
        
@@ -77,7 +79,9 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 
         public void ParseFromEntity(<#= entityName #> entity)
         {
-            <#
+			if (entity == null) return;
+
+<#
 			foreach (var property in efHost.EntityType.Properties)
 			{
 				var name = code.Escape(property);
@@ -87,10 +91,10 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 			}#>
 		}
 
-        private <#= entityName #> ConvertToEntity()
+        public <#= entityName #> ConvertToEntity()
         {
             var entity = new <#= entityName #>();
-            <#
+<#
 			foreach (var property in efHost.EntityType.Properties)
 			{
 				var name = code.Escape(property);
@@ -109,6 +113,11 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
         {
             <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
             var model = service.Read(<#=keyName#>);
+			if (model == null)
+            {
+                return null;
+            }
+
             ParseFromEntity(model);
             return this;
         }
@@ -153,10 +162,52 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             new string[] { <#=string.Join(",",propertyNameList)#> })]
         public List<<#= entityName#>Svc> List()
         {
-            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-            var list = service.List();
-            var result = list.Select(m => GetFromEntity(m)).ToList();
+			var conditions = BuildConditions();
+            List<<#=entityName#>> entityList = new List<<#=entityName#>>();
+			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+            using (<#= efHost.EntityContainer.Name #> db = new <#= efHost.EntityContainer.Name #>(ConnString))
+            {
+                entityList = db.<#=entityName#>.Query(descriptor).ToList() ;
+            }
+
+            var result = entityList.Select(m => GetFromEntity(m)).ToList();
             return result;
+        }
+
+		private List<QueryCondition> BuildConditions()
+        {
+            List<QueryCondition> list = new List<QueryCondition>();
+<#			foreach (var property in efHost.EntityType.Properties)
+			{
+				var typeUsage = code.Escape(property.TypeUsage);
+				var propertyName = code.Escape(property);
+				var queryOperator = GetOperator(typeUsage);
+#>
+			if (<#=propertyName#> != default(<#=typeUsage#>))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "<#=propertyName#>";
+				condition.Operator = QueryOperator.<#=queryOperator#>;
+				condition.Value = <#=propertyName#>;
+				condition.ValueType = typeof(<#=typeUsage#>).GetTypeName();
+				list.Add(condition);
+			}
+<#
+            }#>
+            return list;
         }
     }
 }
+<#+
+	public string GetOperator(string clrType)
+    {
+		if(clrType=="string")
+        {
+			return "CONTAINS";
+		}
+		else 
+        {
+			return "EQUAL";
+		}
+	}
+#>

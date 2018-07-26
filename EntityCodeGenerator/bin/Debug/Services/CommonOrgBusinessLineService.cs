@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Linq.Expressions;
-using RDCN.CPT.Data.Repository;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Core;
+using Common.CSWF.Repository;
+using Common.CSWF.Entity;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Services
+namespace Common.CSWF.Services
 {
 
     public class CommonOrgBusinessLineService
@@ -21,15 +21,15 @@ namespace RDCN.CPT.Data.Services
             _repo = new CommonOrgBusinessLineRepository(_connectionString);
         }
 
-        public CommonOrgBusinessLine Read(string BLCode)
+        public CommonOrgBusinessLine Read(int ID)
         {
-            return _repo.Get(BLCode);
+            return _repo.Get(ID);
         }
 
-        public string Create(CommonOrgBusinessLine model)
+        public int Create(CommonOrgBusinessLine model)
         {
             _repo.Insert(model);
-            return model.BLCode;
+            return model.ID;
         }
 
         public void Update(CommonOrgBusinessLine model)
@@ -37,14 +37,14 @@ namespace RDCN.CPT.Data.Services
             _repo.Update(model);
         }
 
-        public void Delete(string BLCode)
+        public void Delete(int ID)
         {
-            _repo.Delete(m => m.BLCode == BLCode);
+            _repo.Delete(m => m.ID == ID);
         }
 
-        public string CreateOrUpdate(CommonOrgBusinessLine model)
+        public int CreateOrUpdate(CommonOrgBusinessLine model)
         {
-            var get = _repo.Get(model.BLCode);
+            var get = _repo.Get(model.ID);
             if (get == null)
             {
                 _repo.Insert(model);
@@ -53,7 +53,7 @@ namespace RDCN.CPT.Data.Services
             {
                 _repo.Update(model);
             }
-            return model.BLCode;
+            return model.ID;
         }
 
         public List<CommonOrgBusinessLine> List()

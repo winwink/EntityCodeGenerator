@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace RDCN.CPT.Data.Entity
+namespace Common.CSWF.Entity
 {
     public  class CommonAttachmentsConfig
     {
-        public string AttachmentConfigGuid { get; set; }
+        public int ID { get; set; }
+        public string ProcessCode { get; set; }
         public string RequestType { get; set; }
         public string RequestSubType { get; set; }
         public string AttachmentType { get; set; }
@@ -13,7 +14,11 @@ namespace RDCN.CPT.Data.Entity
         public Nullable<bool> IsMandatory { get; set; }
         public Nullable<bool> IsAddWatermark { get; set; }
         public string Condition { get; set; }
-        public Nullable<int> OrderId { get; set; }
+        public int OrderId { get; set; }
+        public string CreateBy { get; set; }
+        public Nullable<System.DateTime> CreateTime { get; set; }
+        public string UpdateBy { get; set; }
+        public Nullable<System.DateTime> UpdateTime { get; set; }
         public Nullable<bool> IsActive { get; set; }
     }
 }

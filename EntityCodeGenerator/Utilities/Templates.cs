@@ -13,7 +13,7 @@ namespace Microsoft.DbContextPackage.Utilities
         public const string RepositoryTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Repository.tt";
         public const string ServiceTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Service.tt";
         public const string SvcTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\Svc.tt";
-
+        public const string SvcTestTemplate = @"CodeTemplates\ReverseEngineerCodeFirst\SvcTest.tt";
 
         public static string GetDefaultTemplate(string path)
         {

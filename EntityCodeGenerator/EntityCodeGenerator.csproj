@@ -93,6 +93,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </None>
+    <None Include="CodeTemplates\ReverseEngineerCodeFirst\SvcTest.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SvcTest.tt</DependentUpon>
+    </None>
     <Compile Include="Config\ConfigEntity.cs" />
     <Compile Include="DBHelper.cs" />
     <Compile Include="StringExtension.cs" />
@@ -103,6 +108,7 @@
     <Compile Include="Template\RepositoryTemplate.cs" />
     <Compile Include="Template\ServiceTemplate.cs" />
     <Compile Include="Template\SvcTemplate.cs" />
+    <Compile Include="Template\SvcTestTemplate.cs" />
     <Compile Include="Utilities\EdmMapping.cs" />
     <Compile Include="Utilities\CodeGenerationToolsForK2.cs" />
     <Compile Include="Utilities\CodeGenerationTools.cs" />
@@ -174,6 +180,10 @@
     <Content Include="CodeTemplates\ReverseEngineerCodeFirst\Svc.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Svc1.cs</LastGenOutput>
+    </Content>
+    <Content Include="CodeTemplates\ReverseEngineerCodeFirst\SvcTest.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SvcTest.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

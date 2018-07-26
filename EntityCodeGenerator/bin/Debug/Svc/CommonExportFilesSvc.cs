@@ -5,21 +5,25 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Services;
+using Common.CSWF.Entity;
+using Common.CSWF.Services;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Svc
+namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonExportFilesSvc", "CommonExportFilesSvc", "CommonExportFilesSvc")]
     public partial class CommonExportFilesSvc
     {
 		[Property("ID", SoType.Number, "ID", "ID")]
         public int ID { get; set; }
+
 		[Property("File", SoType.Text, "File", "File")]
         public string File { get; set; }
+
 		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
-        public Nullable<System.DateTime> CreateTime { get; set; }
+        public System.DateTime CreateTime { get; set; }
+
        
     }
 
@@ -47,15 +51,17 @@ namespace RDCN.CPT.Data.Svc
 
         public void ParseFromEntity(CommonExportFiles entity)
         {
-            			this.ID = entity.ID;
+			if (entity == null) return;
+
+			this.ID = entity.ID;
 			this.File = entity.File;
 			this.CreateTime = entity.CreateTime;
 		}
 
-        private CommonExportFiles ConvertToEntity()
+        public CommonExportFiles ConvertToEntity()
         {
             var entity = new CommonExportFiles();
-            			entity.ID = this.ID;
+			entity.ID = this.ID;
 			entity.File = this.File;
 			entity.CreateTime = this.CreateTime;
             return entity;
@@ -69,6 +75,11 @@ namespace RDCN.CPT.Data.Svc
         {
             CommonExportFilesService service = new CommonExportFilesService(ConnString);
             var model = service.Read(ID);
+			if (model == null)
+            {
+                return null;
+            }
+
             ParseFromEntity(model);
             return this;
         }
@@ -113,10 +124,49 @@ namespace RDCN.CPT.Data.Svc
             new string[] { "ID","File","CreateTime" })]
         public List<CommonExportFilesSvc> List()
         {
-            CommonExportFilesService service = new CommonExportFilesService(ConnString);
-            var list = service.List();
-            var result = list.Select(m => GetFromEntity(m)).ToList();
+			var conditions = BuildConditions();
+            List<CommonExportFiles> entityList = new List<CommonExportFiles>();
+			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+            {
+                entityList = db.CommonExportFiles.Query(descriptor).ToList() ;
+            }
+
+            var result = entityList.Select(m => GetFromEntity(m)).ToList();
             return result;
+        }
+
+		private List<QueryCondition> BuildConditions()
+        {
+            List<QueryCondition> list = new List<QueryCondition>();
+			if (ID != default(int))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "ID";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = ID;
+				condition.ValueType = typeof(int).GetTypeName();
+				list.Add(condition);
+			}
+			if (File != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "File";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = File;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (CreateTime != default(System.DateTime))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "CreateTime";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = CreateTime;
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
+				list.Add(condition);
+			}
+            return list;
         }
     }
 }

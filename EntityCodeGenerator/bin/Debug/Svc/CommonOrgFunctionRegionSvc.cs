@@ -5,27 +5,37 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Services;
+using Common.CSWF.Entity;
+using Common.CSWF.Services;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Svc
+namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonOrgFunctionRegionSvc", "CommonOrgFunctionRegionSvc", "CommonOrgFunctionRegionSvc")]
     public partial class CommonOrgFunctionRegionSvc
     {
-		[Property("FunctionRegionCode", SoType.Text, "FunctionRegionCode", "FunctionRegionCode")]
-        public string FunctionRegionCode { get; set; }
-		[Property("FunctionRegionNameCN", SoType.Text, "FunctionRegionNameCN", "FunctionRegionNameCN")]
-        public string FunctionRegionNameCN { get; set; }
-		[Property("FunctionRegionNameEN", SoType.Text, "FunctionRegionNameEN", "FunctionRegionNameEN")]
-        public string FunctionRegionNameEN { get; set; }
+		[Property("ID", SoType.Number, "ID", "ID")]
+        public int ID { get; set; }
+
+		[Property("BACode", SoType.Text, "BACode", "BACode")]
+        public string BACode { get; set; }
+
 		[Property("BLCode", SoType.Text, "BLCode", "BLCode")]
         public string BLCode { get; set; }
-		[Property("IsActive", SoType.YesNo, "IsActive", "IsActive")]
-        public bool IsActive { get; set; }
+
+		[Property("Function", SoType.Text, "Function", "Function")]
+        public string Function { get; set; }
+
+		[Property("Region", SoType.Text, "Region", "Region")]
+        public string Region { get; set; }
+
 		[Property("OrderId", SoType.Number, "OrderId", "OrderId")]
         public int OrderId { get; set; }
+
+		[Property("IsActive", SoType.YesNo, "IsActive", "IsActive")]
+        public Nullable<bool> IsActive { get; set; }
+
        
     }
 
@@ -53,54 +63,63 @@ namespace RDCN.CPT.Data.Svc
 
         public void ParseFromEntity(CommonOrgFunctionRegion entity)
         {
-            			this.FunctionRegionCode = entity.FunctionRegionCode;
-			this.FunctionRegionNameCN = entity.FunctionRegionNameCN;
-			this.FunctionRegionNameEN = entity.FunctionRegionNameEN;
+			if (entity == null) return;
+
+			this.ID = entity.ID;
+			this.BACode = entity.BACode;
 			this.BLCode = entity.BLCode;
-			this.IsActive = entity.IsActive;
+			this.Function = entity.Function;
+			this.Region = entity.Region;
 			this.OrderId = entity.OrderId;
+			this.IsActive = entity.IsActive;
 		}
 
-        private CommonOrgFunctionRegion ConvertToEntity()
+        public CommonOrgFunctionRegion ConvertToEntity()
         {
             var entity = new CommonOrgFunctionRegion();
-            			entity.FunctionRegionCode = this.FunctionRegionCode;
-			entity.FunctionRegionNameCN = this.FunctionRegionNameCN;
-			entity.FunctionRegionNameEN = this.FunctionRegionNameEN;
+			entity.ID = this.ID;
+			entity.BACode = this.BACode;
 			entity.BLCode = this.BLCode;
-			entity.IsActive = this.IsActive;
+			entity.Function = this.Function;
+			entity.Region = this.Region;
 			entity.OrderId = this.OrderId;
+			entity.IsActive = this.IsActive;
             return entity;
         }
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "FunctionRegionCode" },
-            new string[] { "FunctionRegionCode","FunctionRegionNameCN","FunctionRegionNameEN","BLCode","IsActive","OrderId"})]
+            new string[] { "ID" },
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive"})]
         public CommonOrgFunctionRegionSvc Read()
         {
             CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            var model = service.Read(FunctionRegionCode);
+            var model = service.Read(ID);
+			if (model == null)
+            {
+                return null;
+            }
+
             ParseFromEntity(model);
             return this;
         }
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "FunctionRegionCode","FunctionRegionNameCN","FunctionRegionNameEN","BLCode","IsActive","OrderId" },
-            new string[] { "FunctionRegionCode"})]
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" },
+            new string[] { "ID"})]
         public CommonOrgFunctionRegionSvc Create()
         {
             CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
             var entity = ConvertToEntity();
-            FunctionRegionCode = service.Create(entity);
+            ID = service.Create(entity);
 
             return this;
         }
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "FunctionRegionCode","FunctionRegionNameCN","FunctionRegionNameEN","BLCode","IsActive","OrderId" },
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" },
             new string[] { })]
         public void Update()
         {
@@ -111,24 +130,99 @@ namespace RDCN.CPT.Data.Svc
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "FunctionRegionCode" },
+            new string[] { "ID" },
             new string[] { })]
         public void Delete()
         {
             CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            service.Delete(FunctionRegionCode);
+            service.Delete(ID);
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "FunctionRegionCode","FunctionRegionNameCN","FunctionRegionNameEN","BLCode","IsActive","OrderId" },
-            new string[] { "FunctionRegionCode","FunctionRegionNameCN","FunctionRegionNameEN","BLCode","IsActive","OrderId" })]
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" },
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" })]
         public List<CommonOrgFunctionRegionSvc> List()
         {
-            CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            var list = service.List();
-            var result = list.Select(m => GetFromEntity(m)).ToList();
+			var conditions = BuildConditions();
+            List<CommonOrgFunctionRegion> entityList = new List<CommonOrgFunctionRegion>();
+			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+            {
+                entityList = db.CommonOrgFunctionRegion.Query(descriptor).ToList() ;
+            }
+
+            var result = entityList.Select(m => GetFromEntity(m)).ToList();
             return result;
+        }
+
+		private List<QueryCondition> BuildConditions()
+        {
+            List<QueryCondition> list = new List<QueryCondition>();
+			if (ID != default(int))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "ID";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = ID;
+				condition.ValueType = typeof(int).GetTypeName();
+				list.Add(condition);
+			}
+			if (BACode != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "BACode";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = BACode;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (BLCode != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "BLCode";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = BLCode;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (Function != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "Function";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = Function;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (Region != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "Region";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = Region;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (OrderId != default(int))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "OrderId";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = OrderId;
+				condition.ValueType = typeof(int).GetTypeName();
+				list.Add(condition);
+			}
+			if (IsActive != default(Nullable<bool>))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "IsActive";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = IsActive;
+				condition.ValueType = typeof(Nullable<bool>).GetTypeName();
+				list.Add(condition);
+			}
+            return list;
         }
     }
 }

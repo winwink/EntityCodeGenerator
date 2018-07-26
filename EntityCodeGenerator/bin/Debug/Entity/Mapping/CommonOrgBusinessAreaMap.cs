@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using RDCN.CPT.Data.Entity;
+using Common.CSWF.Entity;
 using System.Data.Entity.ModelConfiguration;
 
-namespace RDCN.CPT.Data.Entity.Mapping
+namespace Common.CSWF.Entity.Mapping
 {
     public class CommonOrgBusinessAreaMap : EntityTypeConfiguration<CommonOrgBusinessArea>
     {
@@ -20,17 +20,12 @@ namespace RDCN.CPT.Data.Entity.Mapping
                 .IsRequired()
                 .HasMaxLength(200);
 
-            this.Property(t => t.BANameEN)
-                .IsRequired()
-                .HasMaxLength(200);
-
             // Table & Column Mappings
             this.ToTable("Common_Org_BusinessArea");
             this.Property(t => t.BACode).HasColumnName("BACode");
             this.Property(t => t.BANameCN).HasColumnName("BANameCN");
-            this.Property(t => t.BANameEN).HasColumnName("BANameEN");
-            this.Property(t => t.IsActive).HasColumnName("IsActive");
             this.Property(t => t.OrderId).HasColumnName("OrderId");
+            this.Property(t => t.IsActive).HasColumnName("IsActive");
         }
     }
 }

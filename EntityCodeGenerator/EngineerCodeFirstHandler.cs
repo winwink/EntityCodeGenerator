@@ -179,6 +179,9 @@ namespace EntityCodeGenerator
 
                         //Generate the svc file
                         new SvcTemplate(entityType).Generator(modelGenerator, templateProcessor, mappings);
+
+                        //Generate the svc test file
+                        new SvcTestTemplate(entityType).Generator(modelGenerator, templateProcessor, mappings);
                     }
 
                     // Generate Context

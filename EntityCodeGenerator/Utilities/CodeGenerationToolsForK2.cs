@@ -101,6 +101,59 @@ namespace Microsoft.DbContextPackage.Utilities
             
             return result;
         }
+
+        #region for Random
+        public static string EscapeForRandom(Type clrType)
+        {
+            var type = clrType;
+            if (clrType.IsGenericType)
+            {
+                type = clrType.GetGenericArguments()[0];
+            }
+            var result = "";
+            var typeName = type.Name.ToLower();
+            result = GetRandomType(typeName);
+
+            return result;
+        }
+
+        public string EscapeForRandom(TypeUsage typeUsage)
+        {
+            if (typeUsage == null)
+            {
+                return "";
+            }
+
+            if (typeUsage.EdmType is ComplexType ||
+                typeUsage.EdmType is EntityType)
+            {
+                return Escape(typeUsage.EdmType.Name);
+            }
+            else if (typeUsage.EdmType is PrimitiveType)
+            {
+
+                Type clrType = _ef.ClrType(typeUsage);
+                string typeName = EscapeForRandom(clrType);
+
+                return typeName;
+            }
+            else if (typeUsage.EdmType is CollectionType)
+            {
+                return String.Format(CultureInfo.InvariantCulture, "ICollection<{0}>", Escape(((CollectionType)typeUsage.EdmType).TypeUsage));
+            }
+
+
+            throw new ArgumentException("typeUsage");
+        }
+
+        public static string GetRandomType(string typeName)
+        {
+            if (string.IsNullOrEmpty(typeName)) return "";
+
+            var result = typeName[0].ToString().ToUpper() + typeName.Substring(1, typeName.Length - 1);
+            return result;
+        }
+        #endregion
     }
 
     public enum SoType

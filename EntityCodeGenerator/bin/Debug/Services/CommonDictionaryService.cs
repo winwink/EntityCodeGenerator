@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Linq.Expressions;
-using RDCN.CPT.Data.Repository;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Core;
+using Common.CSWF.Repository;
+using Common.CSWF.Entity;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Services
+namespace Common.CSWF.Services
 {
 
     public class CommonDictionaryService

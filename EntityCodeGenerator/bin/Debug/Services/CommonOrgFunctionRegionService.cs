@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Linq.Expressions;
-using RDCN.CPT.Data.Repository;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Core;
+using Common.CSWF.Repository;
+using Common.CSWF.Entity;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Services
+namespace Common.CSWF.Services
 {
 
     public class CommonOrgFunctionRegionService
@@ -21,15 +21,15 @@ namespace RDCN.CPT.Data.Services
             _repo = new CommonOrgFunctionRegionRepository(_connectionString);
         }
 
-        public CommonOrgFunctionRegion Read(string FunctionRegionCode)
+        public CommonOrgFunctionRegion Read(int ID)
         {
-            return _repo.Get(FunctionRegionCode);
+            return _repo.Get(ID);
         }
 
-        public string Create(CommonOrgFunctionRegion model)
+        public int Create(CommonOrgFunctionRegion model)
         {
             _repo.Insert(model);
-            return model.FunctionRegionCode;
+            return model.ID;
         }
 
         public void Update(CommonOrgFunctionRegion model)
@@ -37,14 +37,14 @@ namespace RDCN.CPT.Data.Services
             _repo.Update(model);
         }
 
-        public void Delete(string FunctionRegionCode)
+        public void Delete(int ID)
         {
-            _repo.Delete(m => m.FunctionRegionCode == FunctionRegionCode);
+            _repo.Delete(m => m.ID == ID);
         }
 
-        public string CreateOrUpdate(CommonOrgFunctionRegion model)
+        public int CreateOrUpdate(CommonOrgFunctionRegion model)
         {
-            var get = _repo.Get(model.FunctionRegionCode);
+            var get = _repo.Get(model.ID);
             if (get == null)
             {
                 _repo.Insert(model);
@@ -53,7 +53,7 @@ namespace RDCN.CPT.Data.Services
             {
                 _repo.Update(model);
             }
-            return model.FunctionRegionCode;
+            return model.ID;
         }
 
         public List<CommonOrgFunctionRegion> List()

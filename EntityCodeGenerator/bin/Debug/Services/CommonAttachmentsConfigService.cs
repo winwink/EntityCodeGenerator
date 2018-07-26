@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Linq.Expressions;
-using RDCN.CPT.Data.Repository;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Core;
+using Common.CSWF.Repository;
+using Common.CSWF.Entity;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Services
+namespace Common.CSWF.Services
 {
 
     public class CommonAttachmentsConfigService
@@ -21,15 +21,15 @@ namespace RDCN.CPT.Data.Services
             _repo = new CommonAttachmentsConfigRepository(_connectionString);
         }
 
-        public CommonAttachmentsConfig Read(string AttachmentConfigGuid)
+        public CommonAttachmentsConfig Read(int ID)
         {
-            return _repo.Get(AttachmentConfigGuid);
+            return _repo.Get(ID);
         }
 
-        public string Create(CommonAttachmentsConfig model)
+        public int Create(CommonAttachmentsConfig model)
         {
             _repo.Insert(model);
-            return model.AttachmentConfigGuid;
+            return model.ID;
         }
 
         public void Update(CommonAttachmentsConfig model)
@@ -37,14 +37,14 @@ namespace RDCN.CPT.Data.Services
             _repo.Update(model);
         }
 
-        public void Delete(string AttachmentConfigGuid)
+        public void Delete(int ID)
         {
-            _repo.Delete(m => m.AttachmentConfigGuid == AttachmentConfigGuid);
+            _repo.Delete(m => m.ID == ID);
         }
 
-        public string CreateOrUpdate(CommonAttachmentsConfig model)
+        public int CreateOrUpdate(CommonAttachmentsConfig model)
         {
-            var get = _repo.Get(model.AttachmentConfigGuid);
+            var get = _repo.Get(model.ID);
             if (get == null)
             {
                 _repo.Insert(model);
@@ -53,7 +53,7 @@ namespace RDCN.CPT.Data.Services
             {
                 _repo.Update(model);
             }
-            return model.AttachmentConfigGuid;
+            return model.ID;
         }
 
         public List<CommonAttachmentsConfig> List()

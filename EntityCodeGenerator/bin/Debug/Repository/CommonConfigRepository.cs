@@ -1,8 +1,8 @@
-using RDCN.CPT.Data.RepositoryBase;
-using RDCN.CPT.Data.Entity;
+using Common.CSWF.RepositoryBase;
+using Common.CSWF.Entity;
 using System.Data.Entity;
 
-namespace RDCN.CPT.Data.Repository
+namespace Common.CSWF.Repository
 {
     public class CommonConfigRepository : RepositoryBase<CommonConfig>
     {

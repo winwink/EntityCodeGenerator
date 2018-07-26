@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Linq.Expressions;
-using RDCN.CPT.Data.Repository;
-using RDCN.CPT.Data.Entity;
-using RDCN.CPT.Data.Core;
+using Common.CSWF.Repository;
+using Common.CSWF.Entity;
+using Common.CSWF.Core;
 
 
-namespace RDCN.CPT.Data.Services
+namespace Common.CSWF.Services
 {
 
     public class CommonAttachmentsService
@@ -21,15 +21,15 @@ namespace RDCN.CPT.Data.Services
             _repo = new CommonAttachmentsRepository(_connectionString);
         }
 
-        public CommonAttachments Read(int AttachmentID)
+        public CommonAttachments Read(int ID)
         {
-            return _repo.Get(AttachmentID);
+            return _repo.Get(ID);
         }
 
         public int Create(CommonAttachments model)
         {
             _repo.Insert(model);
-            return model.AttachmentID;
+            return model.ID;
         }
 
         public void Update(CommonAttachments model)
@@ -37,14 +37,14 @@ namespace RDCN.CPT.Data.Services
             _repo.Update(model);
         }
 
-        public void Delete(int AttachmentID)
+        public void Delete(int ID)
         {
-            _repo.Delete(m => m.AttachmentID == AttachmentID);
+            _repo.Delete(m => m.ID == ID);
         }
 
         public int CreateOrUpdate(CommonAttachments model)
         {
-            var get = _repo.Get(model.AttachmentID);
+            var get = _repo.Get(model.ID);
             if (get == null)
             {
                 _repo.Insert(model);
@@ -53,7 +53,7 @@ namespace RDCN.CPT.Data.Services
             {
                 _repo.Update(model);
             }
-            return model.AttachmentID;
+            return model.ID;
         }
 
         public List<CommonAttachments> List()

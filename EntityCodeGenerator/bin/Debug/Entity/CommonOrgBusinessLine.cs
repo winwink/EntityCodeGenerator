@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace RDCN.CPT.Data.Entity
+namespace Common.CSWF.Entity
 {
     public  class CommonOrgBusinessLine
     {
-        public string BLCode { get; set; }
+        public int ID { get; set; }
         public string BACode { get; set; }
+        public string BLCode { get; set; }
         public string BLNameCN { get; set; }
-        public string BLNameEN { get; set; }
-        public bool IsActive { get; set; }
         public int OrderId { get; set; }
+        public Nullable<bool> IsActive { get; set; }
     }
 }
