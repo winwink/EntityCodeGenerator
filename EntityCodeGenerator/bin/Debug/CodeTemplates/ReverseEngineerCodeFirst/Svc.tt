@@ -18,7 +18,6 @@ using SourceCode.SmartObjects.Services.ServiceSDK.Types;
 using <#= code.EscapeNamespace(efHost.ModelsNamespace) #>;
 using <#= code.EscapeNamespace(efHost.ServiceNamespace) #>;
 using <#= code.EscapeNamespace(efHost.CoreNamespace) #>;
-
 <# 
 	var keyType = code.Escape(efHost.PrimaryKey.TypeUsage);
     var keyName = efHost.PrimaryKey.Name;
@@ -52,21 +51,10 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 
 <#
     }#>
-       
     }
 
-    public partial class <#= entityName #>Svc
+    public partial class <#= entityName #>Svc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public <#= entityName #>Svc()
         { }
 
@@ -91,7 +79,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 			}#>
 		}
 
-        public <#= entityName #> ConvertToEntity()
+        public <#= entityName #> ToEntity()
         {
             var entity = new <#= entityName #>();
 <#
@@ -111,14 +99,26 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             new string[] { <#=string.Join(",",propertyNameList)#>})]
         public <#= entityName#>Svc Read()
         {
-            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-            var model = service.Read(<#=keyName#>);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+				var model = service.Read(<#=keyName#>);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
@@ -128,10 +128,38 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             new string[] { "<#=keyName#>"})]
         public <#= entityName#>Svc Create()
         {
-            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-            var entity = ConvertToEntity();
-            <#=keyName#> = service.Create(entity);
-
+			try
+			{
+				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+				var entity = ToEntity();
+<#				if(efHost.IsRecordEntity)
+                {	
+#>
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+<#
+				}#>
+				
+<#				if(efHost.IsCreateEntity)
+				{
+#>
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+<#				}
+#>
+				<#=keyName#> = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
@@ -141,9 +169,28 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             new string[] { })]
         public void Update()
         {
-            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+				var entity = ToEntity();
+<#				if (efHost.IsRecordEntity)
+				{
+#>
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+<#				}
+#>
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -152,8 +199,20 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             new string[] { })]
         public void Delete()
         {
-            <#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-            service.Delete(<#=keyName#>);
+			try
+			{
+				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
+				service.Delete(<#=keyName#>);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
@@ -162,15 +221,28 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             new string[] { <#=string.Join(",",propertyNameList)#> })]
         public List<<#= entityName#>Svc> List()
         {
-			var conditions = BuildConditions();
-            List<<#=entityName#>> entityList = new List<<#=entityName#>>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (<#= efHost.EntityContainer.Name #> db = new <#= efHost.EntityContainer.Name #>(ConnString))
-            {
-                entityList = db.<#=entityName#>.Query(descriptor).ToList() ;
-            }
+			List<<#=entityName#>> entityList = new List<<#=entityName#>>();
+			List<<#=entityName#>Svc> result = new List<<#=entityName#>Svc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (<#= efHost.EntityContainer.Name #> db = new <#= efHost.EntityContainer.Name #>(ConnString))
+				{
+					entityList = db.<#=entityName#>.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 

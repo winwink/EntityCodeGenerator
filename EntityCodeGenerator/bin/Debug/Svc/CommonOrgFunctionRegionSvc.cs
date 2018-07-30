@@ -9,7 +9,6 @@ using Common.CSWF.Entity;
 using Common.CSWF.Services;
 using Common.CSWF.Core;
 
-
 namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonOrgFunctionRegionSvc", "CommonOrgFunctionRegionSvc", "CommonOrgFunctionRegionSvc")]
@@ -33,24 +32,25 @@ namespace Common.CSWF.CommonSvc
 		[Property("OrderId", SoType.Number, "OrderId", "OrderId")]
         public int OrderId { get; set; }
 
+		[Property("CreateBy", SoType.Text, "CreateBy", "CreateBy")]
+        public string CreateBy { get; set; }
+
+		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
+        public System.DateTime CreateTime { get; set; }
+
+		[Property("UpdateBy", SoType.Text, "UpdateBy", "UpdateBy")]
+        public string UpdateBy { get; set; }
+
+		[Property("UpdateTime", SoType.DateTime, "UpdateTime", "UpdateTime")]
+        public System.DateTime UpdateTime { get; set; }
+
 		[Property("IsActive", SoType.YesNo, "IsActive", "IsActive")]
         public Nullable<bool> IsActive { get; set; }
 
-       
     }
 
-    public partial class CommonOrgFunctionRegionSvc
+    public partial class CommonOrgFunctionRegionSvc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public CommonOrgFunctionRegionSvc()
         { }
 
@@ -71,10 +71,14 @@ namespace Common.CSWF.CommonSvc
 			this.Function = entity.Function;
 			this.Region = entity.Region;
 			this.OrderId = entity.OrderId;
+			this.CreateBy = entity.CreateBy;
+			this.CreateTime = entity.CreateTime;
+			this.UpdateBy = entity.UpdateBy;
+			this.UpdateTime = entity.UpdateTime;
 			this.IsActive = entity.IsActive;
 		}
 
-        public CommonOrgFunctionRegion ConvertToEntity()
+        public CommonOrgFunctionRegion ToEntity()
         {
             var entity = new CommonOrgFunctionRegion();
 			entity.ID = this.ID;
@@ -83,6 +87,10 @@ namespace Common.CSWF.CommonSvc
 			entity.Function = this.Function;
 			entity.Region = this.Region;
 			entity.OrderId = this.OrderId;
+			entity.CreateBy = this.CreateBy;
+			entity.CreateTime = this.CreateTime;
+			entity.UpdateBy = this.UpdateBy;
+			entity.UpdateTime = this.UpdateTime;
 			entity.IsActive = this.IsActive;
             return entity;
         }
@@ -90,42 +98,86 @@ namespace Common.CSWF.CommonSvc
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
             new string[] { "ID" },
-            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive"})]
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive"})]
         public CommonOrgFunctionRegionSvc Read()
         {
-            CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            var model = service.Read(ID);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
+				var model = service.Read(ID);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonOrgFunctionRegionSvc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" },
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { "ID"})]
         public CommonOrgFunctionRegionSvc Create()
         {
-            CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            var entity = ConvertToEntity();
-            ID = service.Create(entity);
-
+			try
+			{
+				CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
+				var entity = ToEntity();
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+				ID = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonOrgFunctionRegionSvc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" },
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { })]
         public void Update()
         {
-            CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
+				var entity = ToEntity();
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonOrgFunctionRegionSvc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -134,25 +186,50 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Delete()
         {
-            CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
-            service.Delete(ID);
+			try
+			{
+				CommonOrgFunctionRegionService service = new CommonOrgFunctionRegionService(ConnString);
+				service.Delete(ID);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonOrgFunctionRegionSvc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" },
-            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","IsActive" })]
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "ID","BACode","BLCode","Function","Region","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" })]
         public List<CommonOrgFunctionRegionSvc> List()
         {
-			var conditions = BuildConditions();
-            List<CommonOrgFunctionRegion> entityList = new List<CommonOrgFunctionRegion>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
-            {
-                entityList = db.CommonOrgFunctionRegion.Query(descriptor).ToList() ;
-            }
+			List<CommonOrgFunctionRegion> entityList = new List<CommonOrgFunctionRegion>();
+			List<CommonOrgFunctionRegionSvc> result = new List<CommonOrgFunctionRegionSvc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+				{
+					entityList = db.CommonOrgFunctionRegion.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonOrgFunctionRegionSvc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 
@@ -211,6 +288,42 @@ namespace Common.CSWF.CommonSvc
 				condition.Operator = QueryOperator.EQUAL;
 				condition.Value = OrderId;
 				condition.ValueType = typeof(int).GetTypeName();
+				list.Add(condition);
+			}
+			if (CreateBy != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "CreateBy";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = CreateBy;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (CreateTime != default(System.DateTime))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "CreateTime";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = CreateTime;
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
+				list.Add(condition);
+			}
+			if (UpdateBy != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "UpdateBy";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = UpdateBy;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (UpdateTime != default(System.DateTime))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "UpdateTime";
+				condition.Operator = QueryOperator.EQUAL;
+				condition.Value = UpdateTime;
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
 				list.Add(condition);
 			}
 			if (IsActive != default(Nullable<bool>))

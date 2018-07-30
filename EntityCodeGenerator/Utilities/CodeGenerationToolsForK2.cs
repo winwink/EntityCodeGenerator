@@ -111,9 +111,9 @@ namespace Microsoft.DbContextPackage.Utilities
                 type = clrType.GetGenericArguments()[0];
             }
             var result = "";
-            var typeName = type.Name.ToLower();
-            result = GetRandomType(typeName);
-
+            var typeName = type.Name;
+            //result = GetRandomType(typeName);
+            result = typeName;
             return result;
         }
 

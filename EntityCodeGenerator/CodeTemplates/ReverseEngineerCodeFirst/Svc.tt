@@ -51,7 +51,6 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 
 <#
     }#>
-       
     }
 
     public partial class <#= entityName #>Svc : SvcBase
@@ -80,7 +79,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 			}#>
 		}
 
-        public <#= entityName #> ConvertToEntity()
+        public <#= entityName #> ToEntity()
         {
             var entity = new <#= entityName #>();
 <#
@@ -116,7 +115,8 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
-                Logger.Write(RequestID,"<#=entityName#>Svc.Read", LogLevel, variables);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -131,7 +131,24 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 			try
 			{
 				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-				var entity = ConvertToEntity();
+				var entity = ToEntity();
+<#				if(efHost.IsRecordEntity)
+                {	
+#>
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+<#
+				}#>
+				
+<#				if(efHost.IsCreateEntity)
+				{
+#>
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+<#				}
+#>
 				<#=keyName#> = service.Create(entity);
 			}
 			catch(Exception ex)
@@ -139,7 +156,8 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
-                Logger.Write(RequestID,"<#=entityName#>Svc.Create", LogLevel, variables);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -154,7 +172,14 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 			try
 			{
 				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-				var entity = ConvertToEntity();
+				var entity = ToEntity();
+<#				if (efHost.IsRecordEntity)
+				{
+#>
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+<#				}
+#>
 				service.Update(entity);
 			}
 			catch(Exception ex)
@@ -162,7 +187,8 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
-                Logger.Write(RequestID,"<#=entityName#>Svc.Update", LogLevel, variables);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
@@ -183,7 +209,8 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
-                Logger.Write(RequestID,"<#=entityName#>Svc.Delete", LogLevel, variables);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
@@ -212,7 +239,8 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
-                Logger.Write(RequestID,"<#=entityName#>Svc.List", LogLevel, variables);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "<#=entityName#>Svc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

@@ -9,7 +9,6 @@ using Common.CSWF.Entity;
 using Common.CSWF.Services;
 using Common.CSWF.Core;
 
-
 namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonConfigSvc", "CommonConfigSvc", "CommonConfigSvc")]
@@ -27,36 +26,25 @@ namespace Common.CSWF.CommonSvc
 		[Property("Remark", SoType.Text, "Remark", "Remark")]
         public string Remark { get; set; }
 
-		[Property("CreatedBy", SoType.Text, "CreatedBy", "CreatedBy")]
-        public string CreatedBy { get; set; }
+		[Property("CreateBy", SoType.Text, "CreateBy", "CreateBy")]
+        public string CreateBy { get; set; }
 
 		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
-        public Nullable<System.DateTime> CreateTime { get; set; }
+        public System.DateTime CreateTime { get; set; }
 
 		[Property("UpdateBy", SoType.Text, "UpdateBy", "UpdateBy")]
         public string UpdateBy { get; set; }
 
 		[Property("UpdateTime", SoType.DateTime, "UpdateTime", "UpdateTime")]
-        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public System.DateTime UpdateTime { get; set; }
 
 		[Property("IsActive", SoType.YesNo, "IsActive", "IsActive")]
         public Nullable<bool> IsActive { get; set; }
 
-       
     }
 
-    public partial class CommonConfigSvc
+    public partial class CommonConfigSvc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public CommonConfigSvc()
         { }
 
@@ -75,21 +63,21 @@ namespace Common.CSWF.CommonSvc
 			this.ProcessCode = entity.ProcessCode;
 			this.ConfigValue = entity.ConfigValue;
 			this.Remark = entity.Remark;
-			this.CreatedBy = entity.CreatedBy;
+			this.CreateBy = entity.CreateBy;
 			this.CreateTime = entity.CreateTime;
 			this.UpdateBy = entity.UpdateBy;
 			this.UpdateTime = entity.UpdateTime;
 			this.IsActive = entity.IsActive;
 		}
 
-        public CommonConfig ConvertToEntity()
+        public CommonConfig ToEntity()
         {
             var entity = new CommonConfig();
 			entity.ConfigKey = this.ConfigKey;
 			entity.ProcessCode = this.ProcessCode;
 			entity.ConfigValue = this.ConfigValue;
 			entity.Remark = this.Remark;
-			entity.CreatedBy = this.CreatedBy;
+			entity.CreateBy = this.CreateBy;
 			entity.CreateTime = this.CreateTime;
 			entity.UpdateBy = this.UpdateBy;
 			entity.UpdateTime = this.UpdateTime;
@@ -100,42 +88,86 @@ namespace Common.CSWF.CommonSvc
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
             new string[] { "ConfigKey" },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreatedBy","CreateTime","UpdateBy","UpdateTime","IsActive"})]
+            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive"})]
         public CommonConfigSvc Read()
         {
-            CommonConfigService service = new CommonConfigService(ConnString);
-            var model = service.Read(ConfigKey);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				CommonConfigService service = new CommonConfigService(ConnString);
+				var model = service.Read(ConfigKey);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ConfigKey", ConfigKey);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreatedBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { "ConfigKey"})]
         public CommonConfigSvc Create()
         {
-            CommonConfigService service = new CommonConfigService(ConnString);
-            var entity = ConvertToEntity();
-            ConfigKey = service.Create(entity);
-
+			try
+			{
+				CommonConfigService service = new CommonConfigService(ConnString);
+				var entity = ToEntity();
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+				ConfigKey = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ConfigKey", ConfigKey);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreatedBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { })]
         public void Update()
         {
-            CommonConfigService service = new CommonConfigService(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				CommonConfigService service = new CommonConfigService(ConnString);
+				var entity = ToEntity();
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ConfigKey", ConfigKey);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -144,25 +176,50 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Delete()
         {
-            CommonConfigService service = new CommonConfigService(ConnString);
-            service.Delete(ConfigKey);
+			try
+			{
+				CommonConfigService service = new CommonConfigService(ConnString);
+				service.Delete(ConfigKey);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ConfigKey", ConfigKey);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreatedBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreatedBy","CreateTime","UpdateBy","UpdateTime","IsActive" })]
+            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" })]
         public List<CommonConfigSvc> List()
         {
-			var conditions = BuildConditions();
-            List<CommonConfig> entityList = new List<CommonConfig>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
-            {
-                entityList = db.CommonConfig.Query(descriptor).ToList() ;
-            }
+			List<CommonConfig> entityList = new List<CommonConfig>();
+			List<CommonConfigSvc> result = new List<CommonConfigSvc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+				{
+					entityList = db.CommonConfig.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ConfigKey", ConfigKey);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 
@@ -205,22 +262,22 @@ namespace Common.CSWF.CommonSvc
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}
-			if (CreatedBy != default(string))
+			if (CreateBy != default(string))
 			{
 				QueryCondition condition = new QueryCondition();
-				condition.Key = "CreatedBy";
+				condition.Key = "CreateBy";
 				condition.Operator = QueryOperator.CONTAINS;
-				condition.Value = CreatedBy;
+				condition.Value = CreateBy;
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}
-			if (CreateTime != default(Nullable<System.DateTime>))
+			if (CreateTime != default(System.DateTime))
 			{
 				QueryCondition condition = new QueryCondition();
 				condition.Key = "CreateTime";
 				condition.Operator = QueryOperator.EQUAL;
 				condition.Value = CreateTime;
-				condition.ValueType = typeof(Nullable<System.DateTime>).GetTypeName();
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
 				list.Add(condition);
 			}
 			if (UpdateBy != default(string))
@@ -232,13 +289,13 @@ namespace Common.CSWF.CommonSvc
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}
-			if (UpdateTime != default(Nullable<System.DateTime>))
+			if (UpdateTime != default(System.DateTime))
 			{
 				QueryCondition condition = new QueryCondition();
 				condition.Key = "UpdateTime";
 				condition.Operator = QueryOperator.EQUAL;
 				condition.Value = UpdateTime;
-				condition.ValueType = typeof(Nullable<System.DateTime>).GetTypeName();
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
 				list.Add(condition);
 			}
 			if (IsActive != default(Nullable<bool>))

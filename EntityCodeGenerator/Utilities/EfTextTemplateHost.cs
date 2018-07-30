@@ -37,6 +37,62 @@ namespace Microsoft.DbContextPackage.Utilities
         public string TemplateFile { get; set; }
         public string EntityName { get; set; }
 
+        private bool? _IsRecordEntity=null;
+        public bool IsRecordEntity
+        {
+            get
+            {
+                if(_IsRecordEntity != null)
+                {
+                    return _IsRecordEntity.Value;
+                }
+                else
+                {
+                    var entityList = EntityType.Properties.Select(m=>m.Name).ToList();
+                    if (entityList.Exists(m => m == "CreateBy")
+                        && entityList.Exists(m => m == "CreateTime")
+                        && entityList.Exists(m => m == "UpdateBy")
+                        && entityList.Exists(m => m == "UpdateTime"))
+                    {
+                        _IsRecordEntity = true;
+                    }
+                    else
+                    {
+                        _IsRecordEntity = false;
+                    }
+                    return _IsRecordEntity.Value;
+                }
+            }
+        }
+
+
+        private bool? _IsCreateEntity = null;
+        public bool IsCreateEntity
+        {
+            get
+            {
+                if (_IsCreateEntity != null)
+                {
+                    return _IsCreateEntity.Value;
+                }
+                else
+                {
+                    var entityList = EntityType.Properties.Select(m => m.Name).ToList();
+                    if (entityList.Exists(m => m == "CreateBy")
+                        && entityList.Exists(m => m == "CreateTime"))
+                    {
+                        _IsCreateEntity = true;
+                    }
+                    else
+                    {
+                        _IsCreateEntity = false;
+                    }
+                    return _IsCreateEntity.Value;
+                }
+            }
+        }
+
+
         /// <summary>
         /// Single Primary Key
         /// </summary>

@@ -15,6 +15,7 @@ using System;
     var keyName = efHost.PrimaryKey.Name;
 	var entityName = efHost.EntityName;
 	var svcName = entityName+"Svc";
+	var spPropertyNameList = new List<string>(){"CreateBy","CreateTime","UpdateBy","UpdateTime"};
  #>
 namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>.Tests
 {
@@ -42,19 +43,24 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>.Tests
         [TestMethod]
         public void UpdateTest()
         {
-            var result = Create();
-
+			var result = Create();
             var obj = SMOServiceHelper.InitSvc<<#=svcName#>>();
             obj.<#=keyName#> = result.<#=keyName#>;
             result = obj.Read();
 
-            var oldValue = result.AttachmentType;
-            var newValue = result.AttachmentType + "_new";
-            result.AttachmentType = newValue;
+            var newResult = Create();
+            var obj2 = SMOServiceHelper.InitSvc<<#=svcName#>>();
+            obj2.<#=keyName#> = newResult.<#=keyName#>;
+            newResult = obj2.Read();
+
+            CopyEntity(newResult, obj);
             obj.Update();
 
             result = obj.Read();
-            Assert.AreEqual(result.AttachmentType, newValue);
+
+            newResult.<#=keyName#> = result.<#=keyName#>;
+
+            EntityEqual(result, newResult);
         }
 
         [TestMethod]
@@ -88,20 +94,28 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>.Tests
             Assert.IsNotNull(obj1);
             Assert.IsNotNull(obj2);
 
-            var entity1 = obj1.ConvertToEntity();
-            var entity2 = obj2.ConvertToEntity();
+            var entity1 = obj1.ToEntity();
+            var entity2 = obj2.ToEntity();
 <#			foreach (var property in efHost.EntityType.Properties)
 			{
 				var typeUsage = code.Escape(property.TypeUsage);
 				var propertyName = code.Escape(property);
-				
+				if(spPropertyNameList.Contains(propertyName)) continue;
+
+				if(!typeUsage.Contains("DateTime"))
+                {
 #>
             Assert.AreEqual(entity1.<#=propertyName#>, entity2.<#=propertyName#>);
+<#				}else{
+#>
+			Assert.IsTrue(entity1.<#=propertyName#> - entity2.<#=propertyName#> < new TimeSpan(0, 0, 1));
+<#				}
+#>
 <#			}
 #>
         }
 
-		private CommonAttachmentsConfigSvc Create()
+		private <#=svcName#> Create()
         {
             var obj = SMOServiceHelper.InitSvc<<#= svcName#>>();
 <#			foreach (var property in efHost.EntityType.Properties)
@@ -116,6 +130,20 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>.Tests
             var result = obj.Create();
 
             return result;
+        }
+
+		private void CopyEntity(<#=svcName#> from, <#=svcName#> to)
+        {
+<#			foreach (var property in efHost.EntityType.Properties)
+			{
+				var typeUsage = code.Escape(property.TypeUsage);
+				var propertyName = code.Escape(property);
+				if(propertyName == keyName) continue;
+				if(spPropertyNameList.Contains(propertyName)) continue;
+#>
+            to.<#=propertyName#> = from.<#=propertyName#>;
+<#			}
+#>
         }
     }
 }

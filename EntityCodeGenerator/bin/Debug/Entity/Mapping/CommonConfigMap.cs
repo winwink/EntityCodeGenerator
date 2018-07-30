@@ -28,10 +28,12 @@ namespace Common.CSWF.Entity.Mapping
                 .IsRequired()
                 .HasMaxLength(500);
 
-            this.Property(t => t.CreatedBy)
+            this.Property(t => t.CreateBy)
+                .IsRequired()
                 .HasMaxLength(50);
 
             this.Property(t => t.UpdateBy)
+                .IsRequired()
                 .HasMaxLength(50);
 
             // Table & Column Mappings
@@ -40,7 +42,7 @@ namespace Common.CSWF.Entity.Mapping
             this.Property(t => t.ProcessCode).HasColumnName("ProcessCode");
             this.Property(t => t.ConfigValue).HasColumnName("ConfigValue");
             this.Property(t => t.Remark).HasColumnName("Remark");
-            this.Property(t => t.CreatedBy).HasColumnName("CreatedBy");
+            this.Property(t => t.CreateBy).HasColumnName("CreateBy");
             this.Property(t => t.CreateTime).HasColumnName("CreateTime");
             this.Property(t => t.UpdateBy).HasColumnName("UpdateBy");
             this.Property(t => t.UpdateTime).HasColumnName("UpdateTime");

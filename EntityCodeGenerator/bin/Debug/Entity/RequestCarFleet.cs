@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Common.CSWF.Entity
 {
-    public  class RequestCarFleet
+    public  class RequestCarFleet :IRecordEntity
     {
         public long RequestID { get; set; }
         public string RequestNo { get; set; }
@@ -15,9 +15,9 @@ namespace Common.CSWF.Entity
         public string InitiatorName { get; set; }
         public string RequestUrl { get; set; }
         public string CreateBy { get; set; }
-        public Nullable<System.DateTime> CreateTime { get; set; }
+        public System.DateTime CreateTime { get; set; }
         public string UpdateBy { get; set; }
-        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public System.DateTime UpdateTime { get; set; }
         public Nullable<System.DateTime> CompleteTime { get; set; }
         public string FormFields { get; set; }
         public string BACode { get; set; }
@@ -42,3 +42,4 @@ namespace Common.CSWF.Entity
         public string ActualUser { get; set; }
     }
 }
+

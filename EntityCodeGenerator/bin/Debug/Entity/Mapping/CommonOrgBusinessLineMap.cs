@@ -24,6 +24,14 @@ namespace Common.CSWF.Entity.Mapping
                 .IsRequired()
                 .HasMaxLength(200);
 
+            this.Property(t => t.CreateBy)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            this.Property(t => t.UpdateBy)
+                .IsRequired()
+                .HasMaxLength(50);
+
             // Table & Column Mappings
             this.ToTable("Common_Org_BusinessLine");
             this.Property(t => t.ID).HasColumnName("ID");
@@ -32,6 +40,10 @@ namespace Common.CSWF.Entity.Mapping
             this.Property(t => t.BLNameCN).HasColumnName("BLNameCN");
             this.Property(t => t.OrderId).HasColumnName("OrderId");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
+            this.Property(t => t.CreateBy).HasColumnName("CreateBy");
+            this.Property(t => t.CreateTime).HasColumnName("CreateTime");
+            this.Property(t => t.UpdateBy).HasColumnName("UpdateBy");
+            this.Property(t => t.UpdateTime).HasColumnName("UpdateTime");
         }
     }
 }

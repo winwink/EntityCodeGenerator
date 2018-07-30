@@ -9,7 +9,6 @@ using Common.CSWF.Entity;
 using Common.CSWF.Services;
 using Common.CSWF.Core;
 
-
 namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonAttachmentsSvc", "CommonAttachmentsSvc", "CommonAttachmentsSvc")]
@@ -49,23 +48,12 @@ namespace Common.CSWF.CommonSvc
         public string UpdateBy { get; set; }
 
 		[Property("UpdateTime", SoType.DateTime, "UpdateTime", "UpdateTime")]
-        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public System.DateTime UpdateTime { get; set; }
 
-       
     }
 
-    public partial class CommonAttachmentsSvc
+    public partial class CommonAttachmentsSvc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public CommonAttachmentsSvc()
         { }
 
@@ -94,7 +82,7 @@ namespace Common.CSWF.CommonSvc
 			this.UpdateTime = entity.UpdateTime;
 		}
 
-        public CommonAttachments ConvertToEntity()
+        public CommonAttachments ToEntity()
         {
             var entity = new CommonAttachments();
 			entity.ID = this.ID;
@@ -118,14 +106,26 @@ namespace Common.CSWF.CommonSvc
             new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime"})]
         public CommonAttachmentsSvc Read()
         {
-            CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
-            var model = service.Read(ID);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
+				var model = service.Read(ID);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
@@ -135,10 +135,28 @@ namespace Common.CSWF.CommonSvc
             new string[] { "ID"})]
         public CommonAttachmentsSvc Create()
         {
-            CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
-            var entity = ConvertToEntity();
-            ID = service.Create(entity);
-
+			try
+			{
+				CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
+				var entity = ToEntity();
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+				ID = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
@@ -148,9 +166,23 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Update()
         {
-            CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
+				var entity = ToEntity();
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -159,8 +191,20 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Delete()
         {
-            CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
-            service.Delete(ID);
+			try
+			{
+				CommonAttachmentsService service = new CommonAttachmentsService(ConnString);
+				service.Delete(ID);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
@@ -169,15 +213,28 @@ namespace Common.CSWF.CommonSvc
             new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" })]
         public List<CommonAttachmentsSvc> List()
         {
-			var conditions = BuildConditions();
-            List<CommonAttachments> entityList = new List<CommonAttachments>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
-            {
-                entityList = db.CommonAttachments.Query(descriptor).ToList() ;
-            }
+			List<CommonAttachments> entityList = new List<CommonAttachments>();
+			List<CommonAttachmentsSvc> result = new List<CommonAttachmentsSvc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+				{
+					entityList = db.CommonAttachments.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 
@@ -283,13 +340,13 @@ namespace Common.CSWF.CommonSvc
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}
-			if (UpdateTime != default(Nullable<System.DateTime>))
+			if (UpdateTime != default(System.DateTime))
 			{
 				QueryCondition condition = new QueryCondition();
 				condition.Key = "UpdateTime";
 				condition.Operator = QueryOperator.EQUAL;
 				condition.Value = UpdateTime;
-				condition.ValueType = typeof(Nullable<System.DateTime>).GetTypeName();
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
 				list.Add(condition);
 			}
             return list;

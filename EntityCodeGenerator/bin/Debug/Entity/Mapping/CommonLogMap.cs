@@ -24,6 +24,10 @@ namespace Common.CSWF.Entity.Mapping
                 .IsRequired()
                 .HasMaxLength(4000);
 
+            this.Property(t => t.CreateBy)
+                .IsRequired()
+                .HasMaxLength(50);
+
             // Table & Column Mappings
             this.ToTable("Common_Log");
             this.Property(t => t.ID).HasColumnName("ID");
@@ -31,6 +35,7 @@ namespace Common.CSWF.Entity.Mapping
             this.Property(t => t.Source).HasColumnName("Source");
             this.Property(t => t.LogLevel).HasColumnName("LogLevel");
             this.Property(t => t.Message).HasColumnName("Message");
+            this.Property(t => t.CreateBy).HasColumnName("CreateBy");
             this.Property(t => t.CreateTime).HasColumnName("CreateTime");
         }
     }

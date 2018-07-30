@@ -9,7 +9,6 @@ using Common.CSWF.Entity;
 using Common.CSWF.Services;
 using Common.CSWF.Core;
 
-
 namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonExportFilesSvc", "CommonExportFilesSvc", "CommonExportFilesSvc")]
@@ -21,24 +20,16 @@ namespace Common.CSWF.CommonSvc
 		[Property("File", SoType.Text, "File", "File")]
         public string File { get; set; }
 
+		[Property("CreateBy", SoType.Text, "CreateBy", "CreateBy")]
+        public string CreateBy { get; set; }
+
 		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
         public System.DateTime CreateTime { get; set; }
 
-       
     }
 
-    public partial class CommonExportFilesSvc
+    public partial class CommonExportFilesSvc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public CommonExportFilesSvc()
         { }
 
@@ -55,14 +46,16 @@ namespace Common.CSWF.CommonSvc
 
 			this.ID = entity.ID;
 			this.File = entity.File;
+			this.CreateBy = entity.CreateBy;
 			this.CreateTime = entity.CreateTime;
 		}
 
-        public CommonExportFiles ConvertToEntity()
+        public CommonExportFiles ToEntity()
         {
             var entity = new CommonExportFiles();
 			entity.ID = this.ID;
 			entity.File = this.File;
+			entity.CreateBy = this.CreateBy;
 			entity.CreateTime = this.CreateTime;
             return entity;
         }
@@ -70,42 +63,80 @@ namespace Common.CSWF.CommonSvc
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
             new string[] { "ID" },
-            new string[] { "ID","File","CreateTime"})]
+            new string[] { "ID","File","CreateBy","CreateTime"})]
         public CommonExportFilesSvc Read()
         {
-            CommonExportFilesService service = new CommonExportFilesService(ConnString);
-            var model = service.Read(ID);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				CommonExportFilesService service = new CommonExportFilesService(ConnString);
+				var model = service.Read(ID);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","File","CreateTime" },
+            new string[] { "ID","File","CreateBy","CreateTime" },
             new string[] { "ID"})]
         public CommonExportFilesSvc Create()
         {
-            CommonExportFilesService service = new CommonExportFilesService(ConnString);
-            var entity = ConvertToEntity();
-            ID = service.Create(entity);
-
+			try
+			{
+				CommonExportFilesService service = new CommonExportFilesService(ConnString);
+				var entity = ToEntity();
+				
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+				ID = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","File","CreateTime" },
+            new string[] { "ID","File","CreateBy","CreateTime" },
             new string[] { })]
         public void Update()
         {
-            CommonExportFilesService service = new CommonExportFilesService(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				CommonExportFilesService service = new CommonExportFilesService(ConnString);
+				var entity = ToEntity();
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -114,25 +145,50 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Delete()
         {
-            CommonExportFilesService service = new CommonExportFilesService(ConnString);
-            service.Delete(ID);
+			try
+			{
+				CommonExportFilesService service = new CommonExportFilesService(ConnString);
+				service.Delete(ID);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","File","CreateTime" },
-            new string[] { "ID","File","CreateTime" })]
+            new string[] { "ID","File","CreateBy","CreateTime" },
+            new string[] { "ID","File","CreateBy","CreateTime" })]
         public List<CommonExportFilesSvc> List()
         {
-			var conditions = BuildConditions();
-            List<CommonExportFiles> entityList = new List<CommonExportFiles>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
-            {
-                entityList = db.CommonExportFiles.Query(descriptor).ToList() ;
-            }
+			List<CommonExportFiles> entityList = new List<CommonExportFiles>();
+			List<CommonExportFilesSvc> result = new List<CommonExportFilesSvc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+				{
+					entityList = db.CommonExportFiles.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 
@@ -154,6 +210,15 @@ namespace Common.CSWF.CommonSvc
 				condition.Key = "File";
 				condition.Operator = QueryOperator.CONTAINS;
 				condition.Value = File;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (CreateBy != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "CreateBy";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = CreateBy;
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}

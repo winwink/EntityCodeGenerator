@@ -9,7 +9,6 @@ using Common.CSWF.Entity;
 using Common.CSWF.Services;
 using Common.CSWF.Core;
 
-
 namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("RequestCarFleetSvc", "RequestCarFleetSvc", "RequestCarFleetSvc")]
@@ -46,13 +45,13 @@ namespace Common.CSWF.CommonSvc
         public string CreateBy { get; set; }
 
 		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
-        public Nullable<System.DateTime> CreateTime { get; set; }
+        public System.DateTime CreateTime { get; set; }
 
 		[Property("UpdateBy", SoType.Text, "UpdateBy", "UpdateBy")]
         public string UpdateBy { get; set; }
 
 		[Property("UpdateTime", SoType.DateTime, "UpdateTime", "UpdateTime")]
-        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public System.DateTime UpdateTime { get; set; }
 
 		[Property("CompleteTime", SoType.DateTime, "CompleteTime", "CompleteTime")]
         public Nullable<System.DateTime> CompleteTime { get; set; }
@@ -120,21 +119,10 @@ namespace Common.CSWF.CommonSvc
 		[Property("ActualUser", SoType.Text, "ActualUser", "ActualUser")]
         public string ActualUser { get; set; }
 
-       
     }
 
-    public partial class RequestCarFleetSvc
+    public partial class RequestCarFleetSvc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public RequestCarFleetSvc()
         { }
 
@@ -186,7 +174,7 @@ namespace Common.CSWF.CommonSvc
 			this.ActualUser = entity.ActualUser;
 		}
 
-        public RequestCarFleet ConvertToEntity()
+        public RequestCarFleet ToEntity()
         {
             var entity = new RequestCarFleet();
 			entity.RequestID = this.RequestID;
@@ -233,14 +221,26 @@ namespace Common.CSWF.CommonSvc
             new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser"})]
         public RequestCarFleetSvc Read()
         {
-            RequestCarFleetService service = new RequestCarFleetService(ConnString);
-            var model = service.Read(RequestID);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				RequestCarFleetService service = new RequestCarFleetService(ConnString);
+				var model = service.Read(RequestID);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("RequestID", RequestID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
@@ -250,10 +250,28 @@ namespace Common.CSWF.CommonSvc
             new string[] { "RequestID"})]
         public RequestCarFleetSvc Create()
         {
-            RequestCarFleetService service = new RequestCarFleetService(ConnString);
-            var entity = ConvertToEntity();
-            RequestID = service.Create(entity);
-
+			try
+			{
+				RequestCarFleetService service = new RequestCarFleetService(ConnString);
+				var entity = ToEntity();
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+				RequestID = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("RequestID", RequestID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
@@ -263,9 +281,23 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Update()
         {
-            RequestCarFleetService service = new RequestCarFleetService(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				RequestCarFleetService service = new RequestCarFleetService(ConnString);
+				var entity = ToEntity();
+                entity.UpdateBy = CurrentUser;
+                entity.UpdateTime = DateTime.Now;
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("RequestID", RequestID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -274,8 +306,20 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Delete()
         {
-            RequestCarFleetService service = new RequestCarFleetService(ConnString);
-            service.Delete(RequestID);
+			try
+			{
+				RequestCarFleetService service = new RequestCarFleetService(ConnString);
+				service.Delete(RequestID);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("RequestID", RequestID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
@@ -284,15 +328,28 @@ namespace Common.CSWF.CommonSvc
             new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" })]
         public List<RequestCarFleetSvc> List()
         {
-			var conditions = BuildConditions();
-            List<RequestCarFleet> entityList = new List<RequestCarFleet>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
-            {
-                entityList = db.RequestCarFleet.Query(descriptor).ToList() ;
-            }
+			List<RequestCarFleet> entityList = new List<RequestCarFleet>();
+			List<RequestCarFleetSvc> result = new List<RequestCarFleetSvc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+				{
+					entityList = db.RequestCarFleet.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("RequestID", RequestID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 
@@ -389,13 +446,13 @@ namespace Common.CSWF.CommonSvc
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}
-			if (CreateTime != default(Nullable<System.DateTime>))
+			if (CreateTime != default(System.DateTime))
 			{
 				QueryCondition condition = new QueryCondition();
 				condition.Key = "CreateTime";
 				condition.Operator = QueryOperator.EQUAL;
 				condition.Value = CreateTime;
-				condition.ValueType = typeof(Nullable<System.DateTime>).GetTypeName();
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
 				list.Add(condition);
 			}
 			if (UpdateBy != default(string))
@@ -407,13 +464,13 @@ namespace Common.CSWF.CommonSvc
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}
-			if (UpdateTime != default(Nullable<System.DateTime>))
+			if (UpdateTime != default(System.DateTime))
 			{
 				QueryCondition condition = new QueryCondition();
 				condition.Key = "UpdateTime";
 				condition.Operator = QueryOperator.EQUAL;
 				condition.Value = UpdateTime;
-				condition.ValueType = typeof(Nullable<System.DateTime>).GetTypeName();
+				condition.ValueType = typeof(System.DateTime).GetTypeName();
 				list.Add(condition);
 			}
 			if (CompleteTime != default(Nullable<System.DateTime>))

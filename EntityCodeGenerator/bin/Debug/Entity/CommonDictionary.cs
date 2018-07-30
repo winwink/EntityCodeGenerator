@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Common.CSWF.Entity
 {
-    public  class CommonDictionary
+    public  class CommonDictionary :IRecordEntity
     {
         public int ID { get; set; }
         public string ProcessCode { get; set; }
@@ -14,9 +14,10 @@ namespace Common.CSWF.Entity
         public string Value { get; set; }
         public int OrderId { get; set; }
         public string CreateBy { get; set; }
-        public Nullable<System.DateTime> CreateTime { get; set; }
+        public System.DateTime CreateTime { get; set; }
         public string UpdateBy { get; set; }
-        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public System.DateTime UpdateTime { get; set; }
         public Nullable<bool> IsActive { get; set; }
     }
 }
+

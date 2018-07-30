@@ -12,4 +12,3 @@ D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\EntityFramewo
 D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\EntityFramework.SqlServer.xml
 D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.exe
 D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.pdb
-D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.csprojResolveAssemblyReference.cache

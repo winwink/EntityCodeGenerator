@@ -37,6 +37,7 @@ namespace Common.CSWF.Entity.Mapping
                 .HasMaxLength(50);
 
             this.Property(t => t.UpdateBy)
+                .IsRequired()
                 .HasMaxLength(50);
 
             // Table & Column Mappings

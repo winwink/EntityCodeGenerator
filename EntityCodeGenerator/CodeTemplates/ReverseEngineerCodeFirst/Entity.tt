@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace <#= code.EscapeNamespace(efHost.Namespace) #>
 {
-    public  class <#= efHost.EntityName #>
+    public  class <#= efHost.EntityName #> <#=GetInheritType(efHost.IsRecordEntity, efHost.IsCreateEntity)#>
     {
 <#
     var collectionNavigations = efHost.EntityType.NavigationProperties.Where(
@@ -71,3 +71,23 @@ namespace <#= code.EscapeNamespace(efHost.Namespace) #>
 #>
     }
 }
+
+<#+
+	public string GetInheritType(bool isRecordEntity, bool isCreateEntity)
+	{	
+		string typeName = "";
+		if(isCreateEntity)
+        {
+			typeName = "ICreateEntity";
+        }
+		if(isRecordEntity)
+        {
+			typeName = "IRecordEntity";
+        }
+		if(!string.IsNullOrEmpty(typeName))
+        {
+			typeName = ":"+typeName;
+		}
+		return typeName;
+	}
+#>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Common.CSWF.Entity
 {
-    public  class CommonAttachments
+    public  class CommonAttachments :IRecordEntity
     {
         public int ID { get; set; }
         public long RequestID { get; set; }
@@ -16,6 +16,7 @@ namespace Common.CSWF.Entity
         public string CreateBy { get; set; }
         public System.DateTime CreateTime { get; set; }
         public string UpdateBy { get; set; }
-        public Nullable<System.DateTime> UpdateTime { get; set; }
+        public System.DateTime UpdateTime { get; set; }
     }
 }
+

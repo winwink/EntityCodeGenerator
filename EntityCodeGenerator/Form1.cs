@@ -103,8 +103,12 @@ namespace EntityCodeGenerator
             }
             else
             {
-                MessageBox.Show(msgContent);
-                Process.Start("Explorer.exe", Environment.CurrentDirectory);
+                
+                var result = MessageBox.Show(msgContent+", 是否打开所在文件夹","确认",MessageBoxButtons.OKCancel);
+                if (result == DialogResult.OK)
+                {
+                    Process.Start("Explorer.exe", Environment.CurrentDirectory);
+                }
             }
         }
 

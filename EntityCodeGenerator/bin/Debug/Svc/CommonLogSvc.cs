@@ -9,7 +9,6 @@ using Common.CSWF.Entity;
 using Common.CSWF.Services;
 using Common.CSWF.Core;
 
-
 namespace Common.CSWF.CommonSvc
 {
     [ServiceObject("CommonLogSvc", "CommonLogSvc", "CommonLogSvc")]
@@ -30,24 +29,16 @@ namespace Common.CSWF.CommonSvc
 		[Property("Message", SoType.Text, "Message", "Message")]
         public string Message { get; set; }
 
+		[Property("CreateBy", SoType.Text, "CreateBy", "CreateBy")]
+        public string CreateBy { get; set; }
+
 		[Property("CreateTime", SoType.DateTime, "CreateTime", "CreateTime")]
         public System.DateTime CreateTime { get; set; }
 
-       
     }
 
-    public partial class CommonLogSvc
+    public partial class CommonLogSvc : SvcBase
     {
-        public ServiceConfiguration ServiceConfiguration { get; set; }
-
-        public string ConnString
-        {
-            get
-            {
-                return ServiceConfiguration[ServiceBroker.DB_CONNECTION_STR_KEY].ToString();
-            }
-        }
-
         public CommonLogSvc()
         { }
 
@@ -67,10 +58,11 @@ namespace Common.CSWF.CommonSvc
 			this.Source = entity.Source;
 			this.LogLevel = entity.LogLevel;
 			this.Message = entity.Message;
+			this.CreateBy = entity.CreateBy;
 			this.CreateTime = entity.CreateTime;
 		}
 
-        public CommonLog ConvertToEntity()
+        public CommonLog ToEntity()
         {
             var entity = new CommonLog();
 			entity.ID = this.ID;
@@ -78,6 +70,7 @@ namespace Common.CSWF.CommonSvc
 			entity.Source = this.Source;
 			entity.LogLevel = this.LogLevel;
 			entity.Message = this.Message;
+			entity.CreateBy = this.CreateBy;
 			entity.CreateTime = this.CreateTime;
             return entity;
         }
@@ -85,42 +78,80 @@ namespace Common.CSWF.CommonSvc
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
             new string[] { "ID" },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime"})]
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime"})]
         public CommonLogSvc Read()
         {
-            CommonLogService service = new CommonLogService(ConnString);
-            var model = service.Read(ID);
-			if (model == null)
-            {
-                return null;
-            }
+			try
+			{
+				CommonLogService service = new CommonLogService(ConnString);
+				var model = service.Read(ID);
+				if (model == null)
+				{
+					return null;
+				}
 
-            ParseFromEntity(model);
+				ParseFromEntity(model);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Read", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" },
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" },
             new string[] { "ID"})]
         public CommonLogSvc Create()
         {
-            CommonLogService service = new CommonLogService(ConnString);
-            var entity = ConvertToEntity();
-            ID = service.Create(entity);
-
+			try
+			{
+				CommonLogService service = new CommonLogService(ConnString);
+				var entity = ToEntity();
+				
+                entity.CreateBy = CurrentUser;
+                entity.CreateTime = DateTime.Now;
+				ID = service.Create(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Create", SvcLogLevel, variables);
+                throw ex;
+			}
             return this;
         }
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" },
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" },
             new string[] { })]
         public void Update()
         {
-            CommonLogService service = new CommonLogService(ConnString);
-            var entity = ConvertToEntity();
-            service.Update(entity);
+			try
+			{
+				CommonLogService service = new CommonLogService(ConnString);
+				var entity = ToEntity();
+				service.Update(entity);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Update", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
@@ -129,25 +160,50 @@ namespace Common.CSWF.CommonSvc
             new string[] { })]
         public void Delete()
         {
-            CommonLogService service = new CommonLogService(ConnString);
-            service.Delete(ID);
+			try
+			{
+				CommonLogService service = new CommonLogService(ConnString);
+				service.Delete(ID);
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Delete", SvcLogLevel, variables);
+                throw ex;
+			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateTime" })]
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" },
+            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" })]
         public List<CommonLogSvc> List()
         {
-			var conditions = BuildConditions();
-            List<CommonLog> entityList = new List<CommonLog>();
-			QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
-            using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
-            {
-                entityList = db.CommonLog.Query(descriptor).ToList() ;
-            }
+			List<CommonLog> entityList = new List<CommonLog>();
+			List<CommonLogSvc> result = new List<CommonLogSvc>();
+			try
+			{
+				var conditions = BuildConditions();
+				QueryDescriptor descriptor = new QueryDescriptor() { Conditions = conditions };
+				using (RDCN_CSWF_DataContext db = new RDCN_CSWF_DataContext(ConnString))
+				{
+					entityList = db.CommonLog.Query(descriptor).ToList() ;
+				}
 
-            var result = entityList.Select(m => GetFromEntity(m)).ToList();
+				result = entityList.Select(m => GetFromEntity(m)).ToList();
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("ID", ID);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.List", SvcLogLevel, variables);
+                throw ex;
+			}
             return result;
         }
 
@@ -196,6 +252,15 @@ namespace Common.CSWF.CommonSvc
 				condition.Key = "Message";
 				condition.Operator = QueryOperator.CONTAINS;
 				condition.Value = Message;
+				condition.ValueType = typeof(string).GetTypeName();
+				list.Add(condition);
+			}
+			if (CreateBy != default(string))
+			{
+				QueryCondition condition = new QueryCondition();
+				condition.Key = "CreateBy";
+				condition.Operator = QueryOperator.CONTAINS;
+				condition.Value = CreateBy;
 				condition.ValueType = typeof(string).GetTypeName();
 				list.Add(condition);
 			}

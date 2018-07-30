@@ -36,9 +36,11 @@ namespace Common.CSWF.Entity.Mapping
                 .HasMaxLength(500);
 
             this.Property(t => t.CreateBy)
+                .IsRequired()
                 .HasMaxLength(50);
 
             this.Property(t => t.UpdateBy)
+                .IsRequired()
                 .HasMaxLength(50);
 
             // Table & Column Mappings
