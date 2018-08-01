@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("CommonExportFilesSvc", "CommonExportFilesSvc", "CommonExportFilesSvc")]
     public partial class CommonExportFilesSvc
@@ -62,7 +62,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { "ID","File","CreateBy","CreateTime"})]
         public CommonExportFilesSvc Read()
         {
@@ -83,7 +83,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonExportFilesSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -91,7 +91,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","File","CreateBy","CreateTime" },
+            new string[] { "System", "ID","File","CreateBy","CreateTime" },
             new string[] { "ID"})]
         public CommonExportFilesSvc Create()
         {
@@ -110,7 +110,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonExportFilesSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -118,7 +118,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","File","CreateBy","CreateTime" },
+            new string[] { "System", "ID","File","CreateBy","CreateTime" },
             new string[] { })]
         public void Update()
         {
@@ -134,14 +134,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonExportFilesSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { })]
         public void Delete()
         {
@@ -156,14 +156,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonExportFilesSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","File","CreateBy","CreateTime" },
+            new string[] { "System", "ID","File","CreateBy","CreateTime" },
             new string[] { "ID","File","CreateBy","CreateTime" })]
         public List<CommonExportFilesSvc> List()
         {
@@ -186,7 +186,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonExportFilesSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonExportFilesSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

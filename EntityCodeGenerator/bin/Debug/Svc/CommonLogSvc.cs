@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("CommonLogSvc", "CommonLogSvc", "CommonLogSvc")]
     public partial class CommonLogSvc
@@ -17,8 +17,8 @@ namespace Common.CSWF.CommonSvc
 		[Property("ID", SoType.Number, "ID", "ID")]
         public int ID { get; set; }
 
-		[Property("ReqeustID", SoType.Number, "ReqeustID", "ReqeustID")]
-        public long ReqeustID { get; set; }
+		[Property("RequestID", SoType.Number, "RequestID", "RequestID")]
+        public long RequestID { get; set; }
 
 		[Property("Source", SoType.Text, "Source", "Source")]
         public string Source { get; set; }
@@ -54,7 +54,7 @@ namespace Common.CSWF.CommonSvc
 			if (entity == null) return;
 
 			this.ID = entity.ID;
-			this.ReqeustID = entity.ReqeustID;
+			this.RequestID = entity.RequestID;
 			this.Source = entity.Source;
 			this.LogLevel = entity.LogLevel;
 			this.Message = entity.Message;
@@ -66,7 +66,7 @@ namespace Common.CSWF.CommonSvc
         {
             var entity = new CommonLog();
 			entity.ID = this.ID;
-			entity.ReqeustID = this.ReqeustID;
+			entity.RequestID = this.RequestID;
 			entity.Source = this.Source;
 			entity.LogLevel = this.LogLevel;
 			entity.Message = this.Message;
@@ -77,8 +77,8 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "ID" },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime"})]
+            new string[] { "System", "ID" },
+            new string[] { "ID","RequestID","Source","LogLevel","Message","CreateBy","CreateTime"})]
         public CommonLogSvc Read()
         {
 			try
@@ -98,7 +98,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonLogSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -106,7 +106,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" },
+            new string[] { "System", "ID","RequestID","Source","LogLevel","Message","CreateBy","CreateTime" },
             new string[] { "ID"})]
         public CommonLogSvc Create()
         {
@@ -125,7 +125,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonLogSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -133,7 +133,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" },
+            new string[] { "System", "ID","RequestID","Source","LogLevel","Message","CreateBy","CreateTime" },
             new string[] { })]
         public void Update()
         {
@@ -149,14 +149,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonLogSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { })]
         public void Delete()
         {
@@ -171,15 +171,15 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonLogSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" },
-            new string[] { "ID","ReqeustID","Source","LogLevel","Message","CreateBy","CreateTime" })]
+            new string[] { "System", "ID","RequestID","Source","LogLevel","Message","CreateBy","CreateTime" },
+            new string[] { "ID","RequestID","Source","LogLevel","Message","CreateBy","CreateTime" })]
         public List<CommonLogSvc> List()
         {
 			List<CommonLog> entityList = new List<CommonLog>();
@@ -201,7 +201,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonLogSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonLogSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;
@@ -219,12 +219,12 @@ namespace Common.CSWF.CommonSvc
 				condition.ValueType = typeof(int).GetTypeName();
 				list.Add(condition);
 			}
-			if (ReqeustID != default(long))
+			if (RequestID != default(long))
 			{
 				QueryCondition condition = new QueryCondition();
-				condition.Key = "ReqeustID";
+				condition.Key = "RequestID";
 				condition.Operator = QueryOperator.EQUAL;
-				condition.Value = ReqeustID;
+				condition.Value = RequestID;
 				condition.ValueType = typeof(long).GetTypeName();
 				list.Add(condition);
 			}

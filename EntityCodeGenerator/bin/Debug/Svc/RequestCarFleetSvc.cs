@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("RequestCarFleetSvc", "RequestCarFleetSvc", "RequestCarFleetSvc")]
     public partial class RequestCarFleetSvc
@@ -217,7 +217,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "RequestID" },
+            new string[] { "System", "RequestID" },
             new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser"})]
         public RequestCarFleetSvc Read()
         {
@@ -238,7 +238,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("RequestID", RequestID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "RequestCarFleetSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -246,7 +246,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" },
+            new string[] { "System", "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" },
             new string[] { "RequestID"})]
         public RequestCarFleetSvc Create()
         {
@@ -269,7 +269,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("RequestID", RequestID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "RequestCarFleetSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -277,7 +277,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" },
+            new string[] { "System", "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" },
             new string[] { })]
         public void Update()
         {
@@ -295,14 +295,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("RequestID", RequestID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "RequestCarFleetSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "RequestID" },
+            new string[] { "System", "RequestID" },
             new string[] { })]
         public void Delete()
         {
@@ -317,14 +317,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("RequestID", RequestID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "RequestCarFleetSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" },
+            new string[] { "System", "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" },
             new string[] { "RequestID","RequestNo","RequestTypeCode","RequestTypeName","Status","ProcInstID","InitiatorID","InitiatorName","RequestUrl","CreateBy","CreateTime","UpdateBy","UpdateTime","CompleteTime","FormFields","BACode","BAName","BLCode","BLName","FunctionRegionCode","FunctionRegionName","DriverLicenseCode","DriverLicenseType","DriverLicenseStartDate","DriverLicenseEndDate","VehicleLicenseCode","CompulsoryInsuranceStartDate","CompulsoryInsuranceEndDate","YearlyInspectionDate","RentingTypeCode","RentingTypeName","HasDriver","DriverName","RentingCompany","ActualUser" })]
         public List<RequestCarFleetSvc> List()
         {
@@ -347,7 +347,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("RequestID", RequestID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "RequestCarFleetSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "RequestCarFleetSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

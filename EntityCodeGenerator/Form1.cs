@@ -26,7 +26,7 @@ namespace EntityCodeGenerator
             //txtConnectionStr.Text = "Server=127.0.0.1;Database=RDCN_CPT_SMF_Data;Integrated Security=SSPI";
             //txtNameSpace.Text = "RDCN.CPT.Data";
             txtConnectionStr.Text = "Server=127.0.0.1;Database=RDCN_CSWF_Data;Integrated Security=SSPI";
-            txtNameSpace.Text = "Common.CSWF";
+            txtNameSpace.Text = "CSWF.CommonService";
         }
 
         private void btnConnect_Click(object sender, EventArgs e)

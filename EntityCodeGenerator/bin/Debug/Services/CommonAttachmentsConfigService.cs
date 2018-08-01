@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Linq.Expressions;
-using Common.CSWF.Repository;
-using Common.CSWF.Entity;
-using Common.CSWF.Core;
+using CSWF.CommonService.Repository;
+using CSWF.CommonService.Entity;
+using CSWF.Common;
 
 
-namespace Common.CSWF.Services
+namespace CSWF.CommonService.Services
 {
 
     public class CommonAttachmentsConfigService

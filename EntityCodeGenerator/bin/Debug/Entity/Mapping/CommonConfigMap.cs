@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Common.CSWF.Entity;
+using CSWF.CommonService.Entity;
 using System.Data.Entity.ModelConfiguration;
 
-namespace Common.CSWF.Entity.Mapping
+namespace CSWF.CommonService.Entity.Mapping
 {
     public class CommonConfigMap : EntityTypeConfiguration<CommonConfig>
     {

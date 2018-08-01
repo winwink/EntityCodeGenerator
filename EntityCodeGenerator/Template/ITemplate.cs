@@ -50,7 +50,7 @@ namespace EntityCodeGenerator.Template
             repositoryDirectory = Path.Combine(currentDirectory, "Repository");
             repositoryBaseNamespace = projectNamespace + ".RepositoryBase";
             serviceNamespace = projectNamespace + ".Services";
-            coreNamespace = projectNamespace + ".Core";
+            coreNamespace = "CSWF.Common";//projectNamespace + ".Core";
             serviceDirectory = Path.Combine(currentDirectory, "Services");
 
             svcNamespace = projectNamespace + ".CommonSvc";

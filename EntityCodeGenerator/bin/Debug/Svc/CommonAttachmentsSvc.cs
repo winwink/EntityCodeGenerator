@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("CommonAttachmentsSvc", "CommonAttachmentsSvc", "CommonAttachmentsSvc")]
     public partial class CommonAttachmentsSvc
@@ -102,7 +102,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime"})]
         public CommonAttachmentsSvc Read()
         {
@@ -123,7 +123,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -131,7 +131,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" },
+            new string[] { "System", "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" },
             new string[] { "ID"})]
         public CommonAttachmentsSvc Create()
         {
@@ -154,7 +154,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -162,7 +162,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" },
+            new string[] { "System", "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" },
             new string[] { })]
         public void Update()
         {
@@ -180,14 +180,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { })]
         public void Delete()
         {
@@ -202,14 +202,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" },
+            new string[] { "System", "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" },
             new string[] { "ID","RequestID","AttachmentType","AttachmentTypeName","Title","FileName","FileUrl","IsAddWatermark","CreateBy","CreateTime","UpdateBy","UpdateTime" })]
         public List<CommonAttachmentsSvc> List()
         {
@@ -232,7 +232,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

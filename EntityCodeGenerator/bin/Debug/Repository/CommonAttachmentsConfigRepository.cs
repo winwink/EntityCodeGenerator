@@ -1,8 +1,8 @@
-using Common.CSWF.RepositoryBase;
-using Common.CSWF.Entity;
+using CSWF.CommonService.RepositoryBase;
+using CSWF.CommonService.Entity;
 using System.Data.Entity;
 
-namespace Common.CSWF.Repository
+namespace CSWF.CommonService.Repository
 {
     public class CommonAttachmentsConfigRepository : RepositoryBase<CommonAttachmentsConfig>
     {

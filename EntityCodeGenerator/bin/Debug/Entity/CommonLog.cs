@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace Common.CSWF.Entity
+namespace CSWF.CommonService.Entity
 {
     public  class CommonLog :ICreateEntity
     {
         public int ID { get; set; }
-        public long ReqeustID { get; set; }
+        public long RequestID { get; set; }
         public string Source { get; set; }
         public string LogLevel { get; set; }
         public string Message { get; set; }

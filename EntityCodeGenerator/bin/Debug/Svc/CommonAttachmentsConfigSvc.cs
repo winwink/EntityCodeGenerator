@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("CommonAttachmentsConfigSvc", "CommonAttachmentsConfigSvc", "CommonAttachmentsConfigSvc")]
     public partial class CommonAttachmentsConfigSvc
@@ -117,7 +117,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive"})]
         public CommonAttachmentsConfigSvc Read()
         {
@@ -138,7 +138,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -146,7 +146,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "System", "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { "ID"})]
         public CommonAttachmentsConfigSvc Create()
         {
@@ -169,7 +169,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -177,7 +177,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "System", "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { })]
         public void Update()
         {
@@ -195,14 +195,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "ID" },
+            new string[] { "System", "ID" },
             new string[] { })]
         public void Delete()
         {
@@ -217,14 +217,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsConfigSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "System", "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { "ID","ProcessCode","RequestType","RequestSubType","AttachmentType","AttachmentTypeName","IsMandatory","IsAddWatermark","Condition","OrderId","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" })]
         public List<CommonAttachmentsConfigSvc> List()
         {
@@ -247,7 +247,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ID", ID);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonAttachmentsConfigSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonAttachmentsConfigSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

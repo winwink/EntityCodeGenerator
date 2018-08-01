@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("CommonOrgBusinessAreaSvc", "CommonOrgBusinessAreaSvc", "CommonOrgBusinessAreaSvc")]
     public partial class CommonOrgBusinessAreaSvc
@@ -82,7 +82,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "BACode" },
+            new string[] { "System", "BACode" },
             new string[] { "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime"})]
         public CommonOrgBusinessAreaSvc Read()
         {
@@ -103,7 +103,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("BACode", BACode);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -111,7 +111,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" },
+            new string[] { "System", "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" },
             new string[] { "BACode"})]
         public CommonOrgBusinessAreaSvc Create()
         {
@@ -134,7 +134,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("BACode", BACode);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -142,7 +142,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" },
+            new string[] { "System", "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" },
             new string[] { })]
         public void Update()
         {
@@ -160,14 +160,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("BACode", BACode);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "BACode" },
+            new string[] { "System", "BACode" },
             new string[] { })]
         public void Delete()
         {
@@ -182,14 +182,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("BACode", BACode);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" },
+            new string[] { "System", "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" },
             new string[] { "BACode","BANameCN","OrderId","IsActive","CreateBy","CreateTime","UpdateBy","UpdateTime" })]
         public List<CommonOrgBusinessAreaSvc> List()
         {
@@ -212,7 +212,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("BACode", BACode);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonOrgBusinessAreaSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

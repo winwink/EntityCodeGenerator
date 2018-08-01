@@ -5,11 +5,11 @@ using System.Linq;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
-using Common.CSWF.Entity;
-using Common.CSWF.Services;
-using Common.CSWF.Core;
+using CSWF.CommonService.Entity;
+using CSWF.CommonService.Services;
+using CSWF.Common;
 
-namespace Common.CSWF.CommonSvc
+namespace CSWF.CommonService.CommonSvc
 {
     [ServiceObject("CommonConfigSvc", "CommonConfigSvc", "CommonConfigSvc")]
     public partial class CommonConfigSvc
@@ -87,7 +87,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Read", MethodType.Read, "Read", "Read",
             new string[] { },
-            new string[] { "ConfigKey" },
+            new string[] { "System", "ConfigKey" },
             new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive"})]
         public CommonConfigSvc Read()
         {
@@ -108,7 +108,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ConfigKey", ConfigKey);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonConfigSvc.Read", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -116,7 +116,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Create", MethodType.Create, "Create", "Create",
             new string[] { },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "System", "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { "ConfigKey"})]
         public CommonConfigSvc Create()
         {
@@ -139,7 +139,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ConfigKey", ConfigKey);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonConfigSvc.Create", SvcLogLevel, variables);
                 throw ex;
 			}
             return this;
@@ -147,7 +147,7 @@ namespace Common.CSWF.CommonSvc
 
         [Method("Update", MethodType.Update, "Update", "Update",
             new string[] { },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "System", "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { })]
         public void Update()
         {
@@ -165,14 +165,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ConfigKey", ConfigKey);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonConfigSvc.Update", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
-            new string[] { "ConfigKey" },
+            new string[] { "System", "ConfigKey" },
             new string[] { })]
         public void Delete()
         {
@@ -187,14 +187,14 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ConfigKey", ConfigKey);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonConfigSvc.Delete", SvcLogLevel, variables);
                 throw ex;
 			}
         }
 
         [Method("List", MethodType.List, "List", "List",
             new string[] { },
-            new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
+            new string[] { "System", "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" },
             new string[] { "ConfigKey","ProcessCode","ConfigValue","Remark","CreateBy","CreateTime","UpdateBy","UpdateTime","IsActive" })]
         public List<CommonConfigSvc> List()
         {
@@ -217,7 +217,7 @@ namespace Common.CSWF.CommonSvc
                 variables.Add("ConfigKey", ConfigKey);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(RequestID, CurrentUser, "CommonConfigSvc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "CommonConfigSvc.List", SvcLogLevel, variables);
                 throw ex;
 			}
             return result;

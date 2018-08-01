@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Common.CSWF.Entity;
+using CSWF.CommonService.Entity;
 using System.Data.Entity.ModelConfiguration;
 
-namespace Common.CSWF.Entity.Mapping
+namespace CSWF.CommonService.Entity.Mapping
 {
     public class CommonLogMap : EntityTypeConfiguration<CommonLog>
     {
@@ -31,7 +31,7 @@ namespace Common.CSWF.Entity.Mapping
             // Table & Column Mappings
             this.ToTable("Common_Log");
             this.Property(t => t.ID).HasColumnName("ID");
-            this.Property(t => t.ReqeustID).HasColumnName("ReqeustID");
+            this.Property(t => t.RequestID).HasColumnName("RequestID");
             this.Property(t => t.Source).HasColumnName("Source");
             this.Property(t => t.LogLevel).HasColumnName("LogLevel");
             this.Property(t => t.Message).HasColumnName("Message");
