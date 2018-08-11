@@ -116,7 +116,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Read", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Read", LogLevel.ERROR, variables);
                 throw ex;
 			}
             return this;
