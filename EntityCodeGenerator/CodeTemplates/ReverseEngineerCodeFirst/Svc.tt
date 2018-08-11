@@ -157,7 +157,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Create", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Create", LogLevel.ERROR, variables);
                 throw ex;
 			}
             return this;
@@ -171,16 +171,20 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
         {
 			try
 			{
-				<#= entityName#>Service service = new <#= entityName#>Service(ConnString);
-				var entity = ToEntity();
+				using (<#= efHost.EntityContainer.Name #> db = new <#= efHost.EntityContainer.Name #>(ConnString))
+                {
+                    var result = db.<#=entityName#>.Find(<#=keyName#>);
+                    var entity = ToEntity();
 <#				if (efHost.IsRecordEntity)
 				{
 #>
-                entity.UpdateBy = CurrentUser;
-                entity.UpdateTime = DateTime.Now;
+					entity.UpdateBy = CurrentUser;
+					entity.UpdateTime = DateTime.Now;
 <#				}
 #>
-				service.Update(entity);
+                    SetChanged(result, entity);
+                    db.SaveChanges();
+                }
 			}
 			catch(Exception ex)
 			{
@@ -188,7 +192,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Update", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Update", LogLevel.ERROR, variables);
                 throw ex;
 			}
         }
@@ -210,7 +214,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Delete", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Delete", LogLevel.ERROR, variables);
                 throw ex;
 			}
         }
@@ -240,7 +244,7 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                 variables.Add("<#=keyName#>", <#=keyName#>);
                 variables.Add("Msg", ex.Message);
 				Logger.ServiceConfiguration = ServiceConfiguration;
-                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.List", SvcLogLevel, variables);
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.List", LogLevel.ERROR, variables);
                 throw ex;
 			}
             return result;
@@ -268,7 +272,24 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
             }#>
             return list;
         }
+
+		private void SetChanged(<#=entityName#> original, <#=entityName#> changed)
+        {
+<#			foreach (var property in efHost.EntityType.Properties)
+			{
+				var typeUsage = code.Escape(property.TypeUsage);
+				var propertyName = code.Escape(property);
+				var queryOperator = GetOperator(typeUsage);
+#>
+            if (<#=propertyName#> != default(<#=typeUsage#>))
+            {
+                original.<#=propertyName#> = changed.<#=propertyName#>;
+            }
+<#
+            }#>
+        }
     }
+    
 }
 <#+
 	public string GetOperator(string clrType)
