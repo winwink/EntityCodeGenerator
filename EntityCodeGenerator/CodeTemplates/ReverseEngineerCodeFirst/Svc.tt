@@ -197,6 +197,65 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 			}
         }
 
+        [Method("CreateOrUpdate", MethodType.Update, "CreateOrUpdate", "CreateOrUpdate",
+            new string[] { },
+            new string[] { "System", <#=string.Join(",",propertyNameList)#> },
+            new string[] { "<#=keyName#>"})]
+        public <#= entityName#>Svc CreateOrUpdate()
+        {
+			try
+			{
+				using (<#= efHost.EntityContainer.Name #> db = new <#= efHost.EntityContainer.Name #>(ConnString))
+                {
+                    var result = db.<#=entityName#>.Find(<#=keyName#>);
+                    var entity = ToEntity();
+                    if (result == null)
+                    {
+<#					if(efHost.IsRecordEntity)
+					{	
+#>
+						entity.CreateBy = CurrentUser;
+						entity.CreateTime = DateTime.Now;
+						entity.UpdateBy = CurrentUser;
+						entity.UpdateTime = DateTime.Now;
+<#
+					}#>
+<#					if(efHost.IsCreateEntity)
+					{
+#>
+						entity.CreateBy = CurrentUser;
+						entity.CreateTime = DateTime.Now;
+<#					}
+#>
+                        db.Entry(entity).State = EntityState.Added;
+                    }
+                    else
+                    {
+<#					if (efHost.IsRecordEntity)
+					{
+#>
+						entity.UpdateBy = CurrentUser;
+						entity.UpdateTime = DateTime.Now;
+<#					}
+#>
+                        SetChanged(result, entity);
+                    }
+                  
+                    db.SaveChanges();
+                }
+			}
+			catch(Exception ex)
+			{
+				Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", ex.Message);
+				Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.CreateOrUpdate", LogLevel.ERROR, variables);
+                throw ex;
+			}
+            return this;
+        }
+
         [Method("Delete", MethodType.Delete, "Delete", "Delete",
             new string[] { },
             new string[] { "System", "<#=keyName#>" },

@@ -13,3 +13,6 @@ D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\bin\Debug\EntityFramewo
 D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.exe
 D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.pdb
 D:\zhugaopan\code_Github\EFPowerTool\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.csprojResolveAssemblyReference.cache
+D:\zhugaopan\code_Github\EntityCodeGenerator\EntityCodeGenerator\bin\Debug\EntityCodeGenerator.exe.config
+D:\zhugaopan\code_Github\EntityCodeGenerator\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.exe
+D:\zhugaopan\code_Github\EntityCodeGenerator\EntityCodeGenerator\obj\Debug\EntityCodeGenerator.pdb
