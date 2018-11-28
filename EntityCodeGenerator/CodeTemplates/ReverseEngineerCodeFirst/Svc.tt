@@ -12,12 +12,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Data.Entity;
 using SourceCode.SmartObjects.Services.ServiceSDK.Attributes;
 using SourceCode.SmartObjects.Services.ServiceSDK.Objects;
 using SourceCode.SmartObjects.Services.ServiceSDK.Types;
 using <#= code.EscapeNamespace(efHost.ModelsNamespace) #>;
 using <#= code.EscapeNamespace(efHost.ServiceNamespace) #>;
 using <#= code.EscapeNamespace(efHost.CoreNamespace) #>;
+using System.Data.Entity.Validation;
 <# 
 	var keyType = code.Escape(efHost.PrimaryKey.TypeUsage);
     var keyName = efHost.PrimaryKey.Name;
@@ -151,6 +153,16 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
 #>
 				<#=keyName#> = service.Create(entity);
 			}
+			catch (DbEntityValidationException e)
+            {
+                var msg = e.ToFormatString();
+                Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", msg);
+                Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Create", LogLevel.ERROR, variables);
+                throw new DbEntityValidationException(msg);
+            }
 			catch(Exception ex)
 			{
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
@@ -186,6 +198,16 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                     db.SaveChanges();
                 }
 			}
+			catch (DbEntityValidationException e)
+            {
+                var msg = e.ToFormatString();
+                Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", msg);
+                Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.Update", LogLevel.ERROR, variables);
+                throw new DbEntityValidationException(msg);
+            }
 			catch(Exception ex)
 			{
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };
@@ -244,6 +266,16 @@ namespace <#=code.EscapeNamespace(efHost.SvcNamespace)#>
                     db.SaveChanges();
                 }
 			}
+			catch (DbEntityValidationException e)
+            {
+                var msg = e.ToFormatString();
+                Dictionary<string, object> variables = new Dictionary<string, object>() { };
+                variables.Add("<#=keyName#>", <#=keyName#>);
+                variables.Add("Msg", msg);
+                Logger.ServiceConfiguration = ServiceConfiguration;
+                Logger.Write(System, RequestID, CurrentUser, "<#=entityName#>Svc.CreateOrUpdate", LogLevel.ERROR, variables);
+                throw new DbEntityValidationException(msg);
+            }
 			catch(Exception ex)
 			{
 				Dictionary<string, object> variables = new Dictionary<string, object>() { };

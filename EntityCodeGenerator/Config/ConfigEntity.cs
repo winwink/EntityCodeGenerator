@@ -38,7 +38,12 @@ namespace EntityCodeGenerator.Config
     
     public class ConfigEntityCollection
     {
-        public List<ConfigEntity> List { get; set; } = new List<ConfigEntity>();
+        public ConfigEntityCollection()
+        {
+            List = new List<ConfigEntity>(); 
+        }
+
+        public List<ConfigEntity> List { get; set; } 
 
         public static readonly string SavePath = Path.Combine(Environment.CurrentDirectory, "ConfigEntity.xml");
 

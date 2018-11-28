@@ -20,7 +20,7 @@ namespace <#= code.EscapeNamespace(efHost.Namespace) #>
 var keyName = efHost.PrimaryKey.Name;
  #>
 
-    public class <#= efHost.EntityName #>Service
+    public partial class <#= efHost.EntityName #>Service
     {
 		private <#= efHost.EntityName #>Repository _repo;
         private string _connectionString;
@@ -50,20 +50,6 @@ var keyName = efHost.PrimaryKey.Name;
         public void Delete(<#=keyType #> <#= keyName #>)
         {
             _repo.Delete(m => m.<#= keyName #> == <#= keyName #>);
-        }
-
-        public <#= keyType #> CreateOrUpdate(<#= efHost.EntityName #> model)
-        {
-            var get = _repo.Get(model.<#= keyName #>);
-            if (get == null)
-            {
-                _repo.Insert(model);
-            }
-            else
-            {
-                _repo.Update(model);
-            }
-            return model.<#= keyName #>;
         }
 
         public List<<#= efHost.EntityName #>> List()

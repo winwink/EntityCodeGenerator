@@ -18,15 +18,44 @@ namespace EntityCodeGenerator
         public Form1()
         {
             InitializeComponent();
-            Init();
+            InitSystem();
+            //Init();
         }
 
-        private void Init()
+        private void InitSystem()
         {
-            //txtConnectionStr.Text = "Server=127.0.0.1;Database=RDCN_CPT_SMF_Data;Integrated Security=SSPI";
-            //txtNameSpace.Text = "RDCN.CPT.Data";
-            txtConnectionStr.Text = "Server=127.0.0.1;Database=RDCN_CSWF_Data;Integrated Security=SSPI";
-            txtNameSpace.Text = "CSWF.CommonService";
+            CbbSystem.DataSource = new List<string>() { "Common", "RDCN", "RDSZ" };
+        }
+
+        private void SetSystem()
+        {
+            List<string> tables = new List<string>();
+            switch (CbbSystem.Text)
+            {
+                case "Common":
+                    txtConnectionStr.Text = "Server=localhost;Database=RDCN_CSWF_Data;Integrated Security=SSPI";
+                    txtNameSpace.Text = "CSWF.CommonService";
+                    Template.TemplateCommon.SvcSufferName = ".CommonSvc";
+                    tables.AddRange(new List<string>() { "WF_ApprovalMatrix", "WF_ApprovalMatrixInstance", "WF_RoleUser", "WF_Role", "WF_ProcessInfo", "WF_ApprovalHistory", "WF_ProcessInstanceStatus",
+                        "Common_Org_FunctionRegion", "Common_Org_BusinessLine", "Common_Org_BusinessArea", "Common_MailTemplate", "Common_MailRecord", "Common_ExportTemplate", "Common_Attachments", 
+                        "Common_ExportFiles", "Common_Dictionary", "Common_Attachments_Config", "Common_Config", "WF_ProcessInstanceStatus_20180920", "Common_Employee_AdditionalUsers" });
+                    TxtIncludeTables.Text = string.Join("\r\n",tables);
+                    break;
+                case "RDCN":
+                    txtConnectionStr.Text = "Server=localhost;Database=RDCN_CSWF_Data;Integrated Security=SSPI";
+                    txtNameSpace.Text = "CSWF.RDCN";
+                    Template.TemplateCommon.SvcSufferName = ".RequestSvc";
+                    tables.AddRange(new List<string>() { "Request_CarFleet" });
+                    TxtIncludeTables.Text = string.Join("\r\n",tables);
+                    break;
+                case "RDSZ":
+                    txtConnectionStr.Text = "Server=localhost;Database=RDSZ_CSWF_Data;Integrated Security=SSPI";
+                    txtNameSpace.Text = "CSWF.RDSZ";
+                    Template.TemplateCommon.SvcSufferName = ".RequestSvc";
+                    tables.AddRange(new List<string>() { "Request_SHEBadge", "Request_SiteServiceCatering", "SHEBadge_AccessMatrix" });
+                    TxtIncludeTables.Text = string.Join("\r\n",tables);
+                    break;
+            }
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -76,10 +105,10 @@ namespace EntityCodeGenerator
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
-            Generate(true);
+            Generate();
         }
 
-        private void Generate(bool completedRun)
+        private void Generate()
         {
             if (string.IsNullOrEmpty(this.txtNameSpace.Text.Trim()))
             {
@@ -91,8 +120,16 @@ namespace EntityCodeGenerator
             {
                 connectionString = txtConnectionStr.Text.Trim();
             }
+
+            List<string> selectedTables = new List<string>();
+            if (TxtIncludeTables.Text != "")
+            {
+                var array = TxtIncludeTables.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                selectedTables.AddRange(array);
+            }
+
             EngineerCodeFirstHandler codeEngineer = new EngineerCodeFirstHandler();
-            codeEngineer.CodeGenerator(connectionString, txtNameSpace.Text.Trim(), ShowMsg,completedRun);
+            codeEngineer.CodeGenerator(connectionString, txtNameSpace.Text.Trim(), ShowMsg, selectedTables);
         }
 
         private void ShowMsg(string msgContent)
@@ -103,8 +140,8 @@ namespace EntityCodeGenerator
             }
             else
             {
-                
-                var result = MessageBox.Show(msgContent+", 是否打开所在文件夹","确认",MessageBoxButtons.OKCancel);
+
+                var result = MessageBox.Show(msgContent + ", 是否打开所在文件夹", "确认", MessageBoxButtons.OKCancel);
                 if (result == DialogResult.OK)
                 {
                     Process.Start("Explorer.exe", Environment.CurrentDirectory);
@@ -138,7 +175,7 @@ namespace EntityCodeGenerator
         {
             ConfigEntityCollection col = new ConfigEntityCollection();
             List<string> list = new List<string>() { "Common_Attachments_Config", "Common_Config", "Common_Dictionary" };
-            for(int i=0;i<list.Count;i++)
+            for (int i = 0; i < list.Count; i++)
             {
                 col.List.Add(new ConfigEntity(list[i]));
             }
@@ -159,9 +196,20 @@ namespace EntityCodeGenerator
             ConfigLoad();
         }
 
-        private void BtnGenerateOne_Click(object sender, EventArgs e)
+        private void CbbSystem_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Generate(false);
+            SetSystem();
         }
+
+        private void TxtIncludeTables_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\x1')
+            {
+                ((TextBox)sender).SelectAll();
+                e.Handled = true;
+            }
+        }
+
+
     }
 }

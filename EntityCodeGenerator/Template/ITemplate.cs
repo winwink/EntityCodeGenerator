@@ -6,7 +6,7 @@ using System.Data.Metadata.Edm;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static EntityCodeGenerator.EngineerCodeFirstHandler;
+
 
 namespace EntityCodeGenerator.Template
 {
@@ -39,6 +39,8 @@ namespace EntityCodeGenerator.Template
         public static string svcDirectory = "";
         public static string svcTestNamespace = "";
         public static string svcTestDirectory = "";
+
+        public static string SvcSufferName = ".RequestSvc";
         public static void Init()
         {
             var currentDirectory = Environment.CurrentDirectory;
@@ -53,7 +55,8 @@ namespace EntityCodeGenerator.Template
             coreNamespace = "CSWF.Common";//projectNamespace + ".Core";
             serviceDirectory = Path.Combine(currentDirectory, "Services");
 
-            svcNamespace = projectNamespace + ".CommonSvc";
+            svcNamespace = projectNamespace + SvcSufferName;
+            //svcNamespace = projectNamespace + ".CommonSvc";
             svcDirectory = Path.Combine(currentDirectory, "Svc");
 
             svcTestNamespace = svcNamespace + ".Tests";

@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.DbContextPackage.Utilities;
 using System.IO;
 using System.Data.Metadata.Edm;
-using static EntityCodeGenerator.EngineerCodeFirstHandler;
+
 
 namespace EntityCodeGenerator.Template
 {

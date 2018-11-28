@@ -127,7 +127,7 @@ namespace EntityCodeGenerator
         }
 
 
-        public void CodeGenerator(string connectionString, string projectNamespace, Action<string> action, bool completedRun = true)
+        public void CodeGenerator(string connectionString, string projectNamespace, Action<string> action, List<string> selectedTables)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace EntityCodeGenerator
                     var templateProcessor = new TemplateProcessor();
 
 
-                    entityTypes = HandleCompletedRun(entityTypes, completedRun);
+                    entityTypes = HandleCompletedRun(entityTypes, selectedTables);
 
                     TemplateCommon.projectNamespace = projectNamespace;
                     TemplateCommon.entityFrameworkVersion = GetEntityFrameworkVersion();
@@ -203,14 +203,15 @@ namespace EntityCodeGenerator
             }
         }
 
-        private List<EntityType> HandleCompletedRun(List<EntityType> list, bool completedRun)
+        private List<EntityType> HandleCompletedRun(List<EntityType> list, List<string> selectedTables)
         {
             List<EntityType> result = new List<EntityType>(list);
-            if (!completedRun)
+            if (selectedTables.Count > 0)
             {
-                result = list.Take(1).ToList();
-                result = list.Where(m => m.Name == "Request_CarFleet").ToList();
+                result = list.Where(m => selectedTables.Contains(m.Name)).ToList();
             }
+                
+            
             return result;
         }
 
